@@ -1,0 +1,34 @@
+# Statuts de commande
+order:
+  status:
+    pending: "En attente de paiement"
+    paid: "Payée"
+    shipped: "Expédiée"
+    delivered: "Livrée"
+    cancelled: "Annulée"
+
+# Messages de transition
+order_transition:
+  success:
+    paid: "La commande a été marquée comme payée"
+    shipped: "La commande a été expédiée"
+    delivered: "La commande a été livrée"
+    cancelled: "La commande a été annulée"
+  error:
+    invalid_transition: "Impossible de passer du statut \"%current%\" à \"%new%\""
+    not_cancellable: "Cette commande ne peut plus être annulée"
+
+# Statuts de produit
+product:
+  status:
+    draft: "Brouillon"
+    active: "En vente"
+    out_of_stock: "Rupture de stock"
+    archived: "Archivé"
+
+# Erreurs de validation
+validation:
+  positive_quantity: "La quantité doit être au moins 1"
+  positive_price: "Le prix doit être positif"
+  valid_postal_code: "Le code postal doit contenir 5 chiffres"
+  stock_insufficient: "Stock insuffisant (disponible : %available%)"

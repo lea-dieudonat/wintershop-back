@@ -1,0 +1,57 @@
+services:
+  php:
+    user: '${USER_ID}:${GROUP_ID}'
+    build: ./docker/php
+    volumes:
+      - ./:/var/www:delegated
+    depends_on:
+      - database
+      - redis
+    environment:
+      DATABASE_URL: mysql://symfony:symfony@database:3306/ecommerce?serverVersion=8.0
+
+  nginx:
+    build: ./docker/nginx
+    ports:
+     - "8000:80"
+    volumes:
+      - ./:/var/www:delegated
+    depends_on:
+      - php
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  adminer:
+    image: adminer:latest
+    depends_on:
+      - database
+    environment:
+      APP_ENV: dev
+      ADMINER_DESIGN: pepa-linha
+      ADMINER_DEFAULT_SERVER: database
+    ports:
+      - "8082:8080"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  db_data:

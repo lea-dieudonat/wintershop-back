@@ -19,10 +19,15 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    private ?string $name = null;
+    private string $name;
 
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
+    /**
+    * Identifiant URL-friendly du produit.
+    * Format: {nom-produit}-{id} pour garantir l'unicité.
+    * Exemple: "t-shirt-coton-bio-123"
+    */
+    #[ORM\Column(length: 255, unique: true, options: ['comment' => 'Slug unique du produit'])]
+    private string $slug;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $desription = null;
@@ -42,23 +47,33 @@ class Product
     )]
     #[Assert\NotBlank]
     #[Assert\Positive]
-    private ?string $price = null;
+    private string $price;
 
-    #[ORM\Column(options: ['default' => 0])]
+    /**
+    * Quantité disponible en stock.
+    * Doit être mis à jour à chaque commande validée.
+    * Une valeur de 0 signifie "rupture de stock".
+    */
+    #[ORM\Column(options: ['default' => 0, 'comment' => 'Quantité en stock'])]
     #[Assert\PositiveOrZero]
-    private ?int $stock = 0;
+    private int $stock = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
 
-    #[ORM\Column(options: ['default' => true])]
+    /**
+    * Indique si le produit est visible sur le site.
+    * Permet de désactiver un produit sans le supprimer.
+    * Les produits inactifs n'apparaissent pas dans le catalogue.
+    */
+    #[ORM\Column(options: ['default' => true, 'comment' => 'Produit visible sur le site'])]
     private bool $isActive = true;
 
     #[ORM\Column]
-    private ?\DateTime $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
@@ -80,6 +95,7 @@ class Product
     {
         $this->orderItems = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -171,12 +187,12 @@ class Product
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 

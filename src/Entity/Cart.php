@@ -16,11 +16,16 @@ class Cart
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTime $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+    * Utilisateur propriétaire du panier.
+    * Relation OneToOne : un utilisateur = un panier actif.
+    * Le panier est créé automatiquement lors de l'inscription.
+    */
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'cart')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
@@ -28,12 +33,18 @@ class Cart
     /**
      * @var Collection<int, CartItem>
      */
-    #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'cart', orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: CartItem::class, 
+        mappedBy: 'cart', 
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $items;
 
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -41,12 +52,12 @@ class Cart
         return $this->id;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 

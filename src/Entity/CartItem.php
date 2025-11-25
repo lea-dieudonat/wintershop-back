@@ -14,13 +14,18 @@ class CartItem
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    /**
+    * Quantité du produit dans le panier.
+    * Minimum: 1 (sinon l'item doit être supprimé).
+    * Maximum: limité par le stock disponible.
+    */
+    #[ORM\Column(options: ['default' => 1, 'comment' => 'Quantité (min: 1)'])]
     #[Assert\NotBlank]
-    #[Assert\Positive]
-    private ?int $quantity = null;
+    #[Assert\Positive(message: 'La quantité doit être au moins de 1.')]
+    private int $quantity = 1;
 
     #[ORM\Column]
-    private ?\DateTime $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'cartItems')]
     #[ORM\JoinColumn(nullable: false)]
@@ -29,6 +34,11 @@ class CartItem
     #[ORM\ManyToOne(targetEntity: Cart::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cart $cart = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -47,12 +57,12 @@ class CartItem
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 

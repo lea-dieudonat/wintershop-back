@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Enum\OrderStatus;
+use DateTimeImmutable;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -21,8 +22,13 @@ class Order
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50, unique: true)]
-    private ?string $orderNumber = null;
+    /**
+    * Numéro unique de commande généré automatiquement.
+    * Format: ORD-YYYYMMDD-XXXXX (ex: ORD-20241125-00042).
+    * Affiché au client et utilisé pour le support.
+    */
+    #[ORM\Column(length: 50, unique: true, options: ['comment' => 'Numéro unique de commande'])]
+    private string $orderNumber;
 
     /**
      * État de la commande dans le workflow.
@@ -32,19 +38,31 @@ class Order
     #[ORM\Column(
         type: 'string',
         length: 50,
-        enumType: OrderStatus::class,  // ← Important !
+        enumType: OrderStatus::class,
         options: ['comment' => 'Statut de la commande']
     )]
     private OrderStatus $status = OrderStatus::PENDING;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $totalAmount = null;
+    /**
+    * Montant total de la commande TTC.
+    * Calculé automatiquement : somme des OrderItem.totalPrice.
+    * Figé au moment de la validation (historisation).
+    * 
+    * @var string Montant en decimal (ex: "149.99")
+    */
+    #[ORM\Column(
+        type: Types::DECIMAL, 
+        precision: 10, 
+        scale: 2, 
+        options: ['comment' => 'Montant total TTC en EUR']
+    )]
+    private string $totalAmount;
 
     #[ORM\Column]
-    private ?DateTime $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?DateTime $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
@@ -57,12 +75,18 @@ class Order
     /**
      * @var Collection<int, OrderItem>
      */
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'parentOrder', orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: OrderItem::class, 
+        mappedBy: 'parentOrder', 
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $items;
 
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -129,24 +153,24 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): static
+    public function setCreatedAt(DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?DateTime $updatedAt): static
+    public function setUpdatedAt(?DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 

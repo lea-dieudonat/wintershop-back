@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 class Address
@@ -17,28 +18,37 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $street = null;
+    #[Assert\NotBlank]
+    private string $street;
 
     #[ORM\Column(length: 100)]
-    private ?string $city = null;
+    #[Assert\NotBlank]
+    private string $city;
 
     #[ORM\Column(length: 100)]
-    private ?string $postalCode = null;
+    #[Assert\NotBlank]
+    private string $postalCode;
 
     #[ORM\Column(length: 100)]
-    private ?string $country = null;
+    #[Assert\NotBlank]
+    private string $country;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $additionalInfo = null;
 
-    #[ORM\Column(options: ["default" => false])]
-    private ?bool $isDefault = null;
+    /**
+    * Indique si c'est l'adresse par défaut de l'utilisateur.
+    * Un utilisateur ne peut avoir qu'UNE SEULE adresse par défaut.
+    * Utilisée automatiquement lors du checkout.
+    */
+    #[ORM\Column(options: ["default" => false, 'comment' => 'Adresse par défaut'])]
+    private bool $isDefault = false;
 
     #[ORM\Column]
-    private ?\DateTime $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'addresses')]
     #[ORM\JoinColumn(nullable: false)]
@@ -53,6 +63,7 @@ class Address
     public function __construct()
     {
         $this->orders = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -60,7 +71,7 @@ class Address
         return $this->id;
     }
 
-    public function getStreet(): ?string
+    public function getStreet(): string
     {
         return $this->street;
     }
@@ -132,24 +143,24 @@ class Address
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 

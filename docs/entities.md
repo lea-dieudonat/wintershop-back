@@ -18,6 +18,34 @@
 - Permet de garder l'historique
 - Respecte les contraintes RGPD
 
+### status - OrderStatus Enum
+
+#### Valeurs disponibles:
+```php
+enum OrderStatus: string {
+    case PENDING = 'pending';     // En attente de paiement
+    case PAID = 'paid';           // Payée
+    case SHIPPED = 'shipped';     // Expédiée
+    case DELIVERED = 'delivered'; // Livrée
+    case CANCELLED = 'cancelled'; // Annulée
+}
+```
+
+#### Méthodes utiles:
+- `getLabel()`: Libellé français
+- `getBadgeColor()`: Couleur pour badges
+- `isCancellable()`: Peut être annulée ?
+- `getAllowedTransitions()`: Transitions possibles
+- `canTransitionTo(OrderStatus)`: Validation de transition
+
+#### Workflow automatisé:
+```php
+$order->markAsPaid();      // PENDING → PAID
+$order->markAsShipped();   // PAID → SHIPPED
+$order->markAsDelivered(); // SHIPPED → DELIVERED
+$order->cancel();          // PENDING/PAID → CANCELLED
+```
+
 ## Workflow global
 
 ### Parcours d'achat

@@ -18,22 +18,36 @@ class OrderItem
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Positive]
-    private ?int $quantity = null;
+    private int $quantity;
 
     /**
     * Prix unitaire du produit au moment de l'achat.
     * Permet de conserver l'historique même si le prix change.
+    *
+    * @var string Prix unitaire en decimal (ex: "29.99")
     */
     #[ORM\Column(
         type: Types::DECIMAL, 
         precision: 10, 
         scale: 2,
-        options: ['comment' => 'Prix historisé']
+        options: ['comment' => 'Prix unitaire historisé']
     )]
-    private ?string $unitPrice = null;
+    private string $unitPrice;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $totalPrice = null;
+    /**
+    * Prix total pour cet item (unitPrice × quantity).
+    * Calculé et stocké pour optimiser les requêtes.
+    * Doit être recalculé si quantity change (normalement impossible après création).
+    * 
+    * @var string Prix total en decimal
+    */
+    #[ORM\Column(
+        type: Types::DECIMAL, 
+        precision: 10, 
+        scale: 2,
+        options: ['comment' => 'Prix total historisé']
+    )]
+    private string $totalPrice;
 
     #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'orderItems')]
     #[ORM\JoinColumn(nullable: false)]

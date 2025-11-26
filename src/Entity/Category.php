@@ -26,7 +26,7 @@ class Category
     * Utilisé pour les URLs SEO-friendly.
     */
     #[ORM\Column(length: 100, unique: true, options: ['comment' => 'URL slug unique'])]
-    private string $slug;
+    private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;

@@ -27,10 +27,10 @@ class Product
     * Exemple: "t-shirt-coton-bio-123"
     */
     #[ORM\Column(length: 255, unique: true, options: ['comment' => 'Slug unique du produit'])]
-    private string $slug;
+    private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $desription = null;
+    private ?string $description = null;
 
     /**
     * Prix unitaire du produit en euros.
@@ -127,14 +127,14 @@ class Product
         return $this;
     }
 
-    public function getDesription(): ?string
+    public function getDescription(): ?string
     {
-        return $this->desription;
+        return $this->description;
     }
 
-    public function setDesription(string $desription): static
+    public function setDescription(string $description): static
     {
-        $this->desription = $desription;
+        $this->description = $description;
 
         return $this;
     }

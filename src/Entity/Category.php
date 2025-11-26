@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Category
 {
     #[ORM\Id]
@@ -141,5 +142,39 @@ class Category
         }
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function generateSlug(): void
+    {
+        $this->slug = $this->slugify($this->name);
+    }
+
+    private function slugify(string $text): string
+    {
+        // Replace non letter or digits by hyphens
+        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+
+        // Transliterate
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+        // Remove unwanted characters
+        $text = preg_replace('~[^-\w]+~', '', $text);
+
+        // Trim hyphens
+        $text = trim($text, '-');
+
+        // Remove duplicate hyphens
+        $text = preg_replace('~-+~', '-', $text);
+
+        // Lowercase
+        $text = strtolower($text);
+
+        if (empty($text)) {
+            return 'n-a';
+        }
+
+        return $text;
     }
 }

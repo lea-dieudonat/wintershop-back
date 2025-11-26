@@ -2,7 +2,7 @@
 
 ### slug
 ### slug
-- Généré automatiquement via un service Slugger
+- Généré automatiquement via un service Slugger #TODO
 - Format: minuscules, tirets, sans accents
 - Exemple: "Vêtements Homme" → "vetements-homme"
 - Utilisé dans les routes: `/categorie/{slug}`

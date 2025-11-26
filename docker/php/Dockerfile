@@ -12,6 +12,9 @@ RUN install-php-extensions gd
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
+# Create Composer cache directory with proper permissions
+RUN mkdir -p /.composer/cache && chmod 777 /.composer/cache
+
 WORKDIR /var/www
 
 # RUN apt-get update && apt-get install -y \

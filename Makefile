@@ -125,3 +125,38 @@ fresh: ## Fresh install (rebuild, composer install, db setup)
 	@make composer-install
 	@make db-create
 	@echo "$(GREEN)Fresh install complete!$(NC)"
+
+### Testing commands ###
+
+test-db-create: ## Create test database
+	@echo "$(YELLOW)Creating test database...$(NC)"
+	docker compose exec php php bin/console doctrine:database:create --env=test --if-not-exists
+
+test-db-schema: ## Create test database schema
+	@echo "$(YELLOW)Creating test database schema...$(NC)"
+	docker compose exec php php bin/console doctrine:schema:create --env=test
+
+test-db-migrate: ## Run migrations on test database
+	@echo "$(YELLOW)Running test migrations...$(NC)"
+	docker compose exec php php bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+test-db-fixtures: ## Load fixtures in test database
+	@echo "$(YELLOW)Loading test fixtures...$(NC)"
+	docker compose exec php php bin/console doctrine:fixtures:load --env=test --no-interaction
+
+test-db-reset: ## Reset test database (drop, create, migrate, fixtures)
+	@echo "$(YELLOW)Resetting test database...$(NC)"
+	docker compose exec php php bin/console doctrine:database:drop --env=test --force --if-exists
+	@make test-db-create
+	@make test-db-migrate
+	@make test-db-fixtures
+	@echo "$(GREEN)Test database reset complete!$(NC)"
+
+test-unit: ## Run unit tests
+	docker compose exec php php bin/phpunit --testsuite=Unit
+
+test-functional: ## Run functional tests
+	docker compose exec php php bin/console doctrine:database:drop --env=test --force --if-exists
+	docker compose exec php php bin/console doctrine:database:create --env=test
+	docker compose exec php php bin/console doctrine:migrations:migrate --env=test --no-interaction
+	docker compose exec php php bin/phpunit --testsuite=Functional

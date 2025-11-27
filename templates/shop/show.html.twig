@@ -1,0 +1,92 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}{{ product.name }} - Winter Sports Shop{% endblock %}
+
+{% block body %}
+<div class="container">
+    <p style="margin-bottom: 1rem;">
+        <a href="{{ path('app_shop_category', {slug: product.category.slug}) }}" style="color: #667eea; text-decoration: none;">
+            ← Retour à {{ product.category.name }}
+        </a>
+    </p>
+
+    <div style="background: white; border-radius: 10px; padding: 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+            <!-- Image produit -->
+            <div>
+                <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 5rem;">
+                    {% if product.category.slug == 'skis' %}
+                        🎿
+                    {% elseif product.category.slug == 'snowboards' %}
+                        🏂
+                    {% elseif product.category.slug == 'boots' %}
+                        👢
+                    {% elseif product.category.slug == 'clothing' %}
+                        🧥
+                    {% elseif product.category.slug == 'accessories' %}
+                        🥽
+                    {% else %}
+                        ❄️
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informations produit -->
+            <div>
+                <div style="display: inline-block; background: #e0e7ff; color: #667eea; padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.9rem; margin-bottom: 1rem;">
+                    {{ product.category.name }}
+                </div>
+                
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #333;">{{ product.name }}</h1>
+                
+                <div style="font-size: 2rem; font-weight: bold; color: #667eea; margin-bottom: 1.5rem;">
+                    {{ product.price }} €
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    {% if product.stock == 0 %}
+                        <span style="color: #ef4444; font-weight: bold; font-size: 1.1rem;">
+                            ❌ Rupture de stock
+                        </span>
+                    {% elseif product.stock < 5 %}
+                        <span style="color: #f59e0b; font-weight: bold; font-size: 1.1rem;">
+                            ⚠️ Plus que {{ product.stock }} en stock
+                        </span>
+                    {% else %}
+                        <span style="color: #10b981; font-weight: bold; font-size: 1.1rem;">
+                            ✅ En stock ({{ product.stock }} disponibles)
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if product.description %}
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: #333;">Description</h2>
+                        <p style="color: #666; line-height: 1.8;">{{ product.description }}</p>
+                    </div>
+                {% endif %}
+
+                {% if product.stock > 0 %}
+                    <button class="btn" style="width: 100%; font-size: 1.2rem; cursor: pointer; border: none;">
+                        🛒 Ajouter au panier
+                    </button>
+                {% else %}
+                    <button class="btn" style="width: 100%; font-size: 1.2rem; background: #ccc; cursor: not-allowed; border: none;" disabled>
+                        Indisponible
+                    </button>
+                {% endif %}
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #666; font-size: 0.9rem;">
+                        <strong>Référence:</strong> #{{ product.id }}<br>
+                        <strong>Ajouté le:</strong> {{ product.createdAt|date('d/m/Y') }}
+                        {% if product.updatedAt %}
+                            <br><strong>Mis à jour le:</strong> {{ product.updatedAt|date('d/m/Y') }}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

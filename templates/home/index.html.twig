@@ -1,0 +1,59 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Accueil - Winter Sports Shop{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="hero">
+        <h1>🏔️ Bienvenue sur Winter Sports Shop</h1>
+        <p>Votre spécialiste des équipements de sports d'hiver</p>
+        <br>
+        <a href="{{ path('app_shop_index') }}" class="btn">Découvrir la boutique</a>
+    </div>
+
+    <h2 class="section-title">Nos catégories</h2>
+    <div class="categories-grid">
+        {% for category in categories %}
+            <a href="{{ path('app_shop_category', {slug: category.slug}) }}" class="category-card">
+                <h3>{{ category.name }}</h3>
+                {% if category.description %}
+                    <p>{{ category.description|length > 80 ? category.description|slice(0, 80) ~ '...' : category.description }}</p>
+                {% endif %}
+            </a>
+        {% else %}
+            <p>Aucune catégorie disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="section-title">Nos derniers produits</h2>
+    <div class="products-grid">
+        {% for product in featuredProducts %}
+            <a href="{{ path('app_shop_product', {id: product.id}) }}" class="product-card">
+                <div class="product-image">
+                    🎿
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-description">
+                        {{ product.description }}
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">{{ product.price }} €</div>
+                        <div class="product-stock {% if product.stock == 0 %}stock-out{% elseif product.stock < 5 %}stock-low{% endif %}">
+                            {% if product.stock == 0 %}
+                                Rupture de stock
+                            {% elseif product.stock < 5 %}
+                                Plus que {{ product.stock }} en stock
+                            {% else %}
+                                En stock ({{ product.stock }})
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% else %}
+            <p>Aucun produit disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

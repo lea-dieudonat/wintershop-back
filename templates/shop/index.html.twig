@@ -1,0 +1,75 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}
+    {% if currentCategory %}
+        {{ currentCategory.name }} - Boutique
+    {% else %}
+        Tous les produits - Boutique
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="section-title">
+        {% if currentCategory %}
+            {{ currentCategory.name }}
+        {% else %}
+            Tous nos produits
+        {% endif %}
+    </h1>
+    
+    {% if currentCategory and currentCategory.description %}
+        <p style="margin-bottom: 2rem; color: #666;">{{ currentCategory.description }}</p>
+    {% endif %}
+    
+    {% if currentCategory %}
+        <p style="margin-bottom: 1rem;">
+            <a href="{{ path('app_shop_index') }}" style="color: #667eea; text-decoration: none;">
+                ← Retour à tous les produits
+            </a>
+        </p>
+    {% endif %}
+
+    <div class="products-grid">
+        {% for product in products %}
+            <a href="{{ path('app_shop_product', {id: product.id}) }}" class="product-card">
+                <div class="product-image">
+                    {% if product.category.slug == 'skis' %}
+                        🎿
+                    {% elseif product.category.slug == 'snowboards' %}
+                        🏂
+                    {% elseif product.category.slug == 'boots' %}
+                        👢
+                    {% elseif product.category.slug == 'clothing' %}
+                        🧥
+                    {% elseif product.category.slug == 'accessories' %}
+                        🥽
+                    {% else %}
+                        ❄️
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-description">
+                        {{ product.description }}
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price">{{ product.price }} €</div>
+                        <div class="product-stock {% if product.stock == 0 %}stock-out{% elseif product.stock < 5 %}stock-low{% endif %}">
+                            {% if product.stock == 0 %}
+                                Rupture de stock
+                            {% elseif product.stock < 5 %}
+                                Plus que {{ product.stock }}
+                            {% else %}
+                                En stock
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% else %}
+            <p>Aucun produit disponible dans cette catégorie.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

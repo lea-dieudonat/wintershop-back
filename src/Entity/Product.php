@@ -47,9 +47,13 @@ class Product
         scale: 2,
         options: ['comment' => 'Prix en EUR (decimal 10,2)']
     )]
-    #[Assert\NotBlank]
-    #[Assert\Positive]
-    private string $price;
+    #[Assert\NotBlank(message: 'Le prix est obligatoire')]
+    #[Assert\Positive(message: 'Le prix doit être positif')]
+    #[Assert\Regex(
+        pattern: '/^\d+(\.\d{1,2})?$/',
+        message: 'Le prix doit être au format décimal avec maximum deux chiffres après la virgule'
+    )]
+    private ?string $price = null;
 
     /**
     * Quantité disponible en stock.
@@ -57,7 +61,12 @@ class Product
     * Une valeur de 0 signifie "rupture de stock".
     */
     #[ORM\Column(options: ['default' => 0, 'comment' => 'Quantité en stock'])]
-    #[Assert\PositiveOrZero]
+    #[Assert\NotBlank(message: 'Le stock est obligatoire')]
+    #[Assert\PositiveOrZero(message: 'Le stock ne peut pas être négatif')]
+    #[Assert\Type(
+        type: 'integer',
+        message: 'Le stock doit être un nombre entier'
+    )]
     private int $stock = 0;
 
     #[ORM\Column(length: 255, nullable: true)]

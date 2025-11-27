@@ -14,7 +14,6 @@ final class CategoryControllerTest extends WebTestCase
     private KernelBrowser $client;
     private EntityManagerInterface $manager;
     private EntityRepository $categoryRepository;
-    private string $path = '/category/';
 
     protected function setUp(): void
     {
@@ -27,6 +26,11 @@ final class CategoryControllerTest extends WebTestCase
         }
 
         $this->manager->flush();
+    }
+
+    private function generateUrl(string $route, array $parameters = []): string
+    {
+        return $this->client->getContainer()->get('router')->generate($route, $parameters);
     }
 
     public static function categoryNameProvider(): array
@@ -42,20 +46,25 @@ final class CategoryControllerTest extends WebTestCase
 
     public function testIndex(): void
     {
+        CategoryFactory::createOne(['name' => 'Test Category 1']);
+        CategoryFactory::createOne(['name' => 'Test Category 2']);
+
         $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->path);
+        $crawler = $this->client->request('GET', $this->generateUrl('app_category_index'));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Category index');
 
         // Use the $crawler to perform additional assertions e.g.
         // self::assertSame('Some text on the page', $crawler->filter('.p')->first()->text());
+        self::assertSelectorTextContains('body', 'Test Category 1');
+        self::assertSelectorTextContains('body', 'Test Category 2');
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('categoryNameProvider')]
     public function testNew(string $name, string $expectedSlug): void
     {
-        $this->client->request('GET', sprintf('%snew', $this->path));
+        $this->client->request('GET', $this->generateUrl('app_category_new'));
 
         self::assertResponseStatusCodeSame(200);
 
@@ -76,12 +85,12 @@ final class CategoryControllerTest extends WebTestCase
 
     public function testShow(): void
     {
-        $fixture = CategoryFactory::create('My Title', 'My Title');
+        $fixture = CategoryFactory::createOne([
+            'name' => 'My Title',
+            'description' => 'My Title',
+        ]);
 
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->request('GET', $this->generateUrl('app_category_show', ['id' => $fixture->getId()]));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Category');
@@ -90,12 +99,17 @@ final class CategoryControllerTest extends WebTestCase
 
     public function testEdit(): void
     {
-        $fixture = CategoryFactory::create('Value', 'Value');
+        $fixture = CategoryFactory::createOne([
+            'name' => 'Old Title',
+            'description' => 'Old Title',
+        ]);
 
-        $this->manager->persist($fixture);
-        $this->manager->flush();
+        $originalUpdatedAt = $fixture->getUpdatedAt();
 
-        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
+        // Small delay to ensure updatedAt changes
+        sleep(1);
+
+        $this->client->request('GET', $this->generateUrl('app_category_edit', ['id' => $fixture->getId()]));
 
         $this->client->submitForm('Update', [
             'category[name]' => 'Something New',
@@ -105,21 +119,25 @@ final class CategoryControllerTest extends WebTestCase
         self::assertResponseRedirects();
         $this->client->followRedirect();
 
-        $fixture = $this->categoryRepository->findAll();
+        $updated = $this->categoryRepository->findAll();
 
-        self::assertSame('Something New', $fixture[0]->getName());
-        self::assertSame('something-new', $fixture[0]->getSlug());
-        self::assertSame('Something New', $fixture[0]->getDescription());
+        self::assertSame('Something New', $updated[0]->getName());
+        self::assertSame('something-new', $updated[0]->getSlug());
+        self::assertSame('Something New', $updated[0]->getDescription());
+
+        // Verify updatedAt was set
+        self::assertNotNull($updated[0]->getUpdatedAt());
+        self::assertNotEquals($originalUpdatedAt, $updated[0]->getUpdatedAt());
     }
 
     public function testRemove(): void
     {
-        $fixture = CategoryFactory::create('Value', 'Value');
+        $fixture = CategoryFactory::createOne([
+            'name' => 'Value',
+            'description' => 'Value',
+        ]);
 
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->request('GET', $this->generateUrl('app_category_show', ['id' => $fixture->getId()]));
         $this->client->submitForm('Delete');
 
         self::assertResponseRedirects();

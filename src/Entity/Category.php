@@ -151,6 +151,12 @@ class Category
         $this->slug = $this->slugify($this->name);
     }
 
+    #[ORM\PreUpdate]
+    public function updateTimestamp(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     private function slugify(string $text): string
     {
         // Replace non letter or digits by hyphens

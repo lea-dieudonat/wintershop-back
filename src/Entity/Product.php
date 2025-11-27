@@ -7,9 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Product
 {
     #[ORM\Id]
@@ -96,6 +98,27 @@ class Product
         $this->orderItems = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * Génère automatiquement le slug avant la première sauvegarde.
+     * Format: {nom-produit}-{timestamp} pour garantir l'unicité.
+     */
+    #[ORM\PrePersist]
+    public function generateSlug(): void
+    {
+        if (empty($this->slug)) {
+            $slugger = new AsciiSlugger();
+            $baseSlug = $slugger->slug(strtolower($this->name));
+            // Ajoute un timestamp pour garantir l'unicité avant d'avoir l'ID
+            $this->slug = $baseSlug . '-' . time() . '-' . bin2hex(random_bytes(4));
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function updateTimestamp(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -199,12 +222,12 @@ class Product
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 

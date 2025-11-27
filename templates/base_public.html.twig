@@ -18,7 +18,20 @@
                     <li><a href="{{ path('app_home') }}">Accueil</a></li>
                     <li><a href="{{ path('app_shop_index') }}">Boutique</a></li>
                     <li><a href="#">Panier</a></li>
-                    <li><a href="#">Mon compte</a></li>
+                    {% if app.user %}
+                        {# Utilisateur connecté #}
+                        <li><a href="#">👤 {{ app.user.firstName }}</a></li>
+                        
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('app_category_index') }}">⚙️ Admin</a></li>
+                        {% endif %}
+                        
+                        <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                    {% else %}
+                        {# Utilisateur non connecté #}
+                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>

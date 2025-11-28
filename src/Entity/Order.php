@@ -15,6 +15,7 @@ use DateTimeImmutable;
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
 #[UniqueEntity('email')]
+#[ORM\HasLifecycleCallbacks]
 class Order
 {
     #[ORM\Id]
@@ -28,7 +29,7 @@ class Order
     * Affiché au client et utilisé pour le support.
     */
     #[ORM\Column(length: 50, unique: true, options: ['comment' => 'Numéro unique de commande'])]
-    private string $orderNumber;
+    private ?string $orderNumber = null;
 
     /**
      * État de la commande dans le workflow.
@@ -68,9 +69,13 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Address::class, inversedBy: 'orders')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Address $deliveryAddress = null;
+    private ?Address $shippingAddress = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $billingAddress = null;
 
     /**
      * @var Collection<int, OrderItem>
@@ -189,14 +194,26 @@ class Order
         return $this;
     }
 
-    public function getDeliveryAddress(): ?Address
+    public function getShippingAddress(): ?Address
     {
-        return $this->deliveryAddress;
+        return $this->shippingAddress;
     }
 
-    public function setDeliveryAddress(?Address $deliveryAddress): static
+    public function setShippingAddress(?Address $shippingAddress): static
     {
-        $this->deliveryAddress = $deliveryAddress;
+        $this->shippingAddress = $shippingAddress;
+
+        return $this;
+    }
+
+    public function getBillingAddress(): ?Address
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress(?Address $billingAddress): static
+    {
+        $this->billingAddress = $billingAddress;
 
         return $this;
     }
@@ -229,5 +246,14 @@ class Order
         }
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function generateOrderNumber(): void
+    {
+        if ($this->orderNumber === null) {
+            // Format: ORD-20241128-XXXXX
+            $this->orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+        }
     }
 }

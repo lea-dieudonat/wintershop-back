@@ -54,15 +54,20 @@ class Address
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    /**
-     * @var Collection<int, Order>
-     */
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'deliveryAddress')]
-    private Collection $orders;
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    private string $firstName;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    private string $lastName;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
+    private string $phoneNumber;
 
     public function __construct()
     {
-        $this->orders = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -179,32 +184,38 @@ class Address
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
+    public function getFirstName(): ?string
     {
-        return $this->orders;
+        return $this->firstName;
     }
 
-    public function addOrder(Order $order): static
+    public function setFirstName(string $firstName): static
     {
-        if (!$this->orders->contains($order)) {
-            $this->orders->add($order);
-            $order->setDeliveryAddress($this);
-        }
+        $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function removeOrder(Order $order): static
+    public function getLastName(): ?string
     {
-        if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
-            if ($order->getDeliveryAddress() === $this) {
-                $order->setDeliveryAddress(null);
-            }
-        }
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }

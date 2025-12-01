@@ -24,7 +24,7 @@
     
     {% if currentCategory %}
         <p style="margin-bottom: 1rem;">
-            <a href="{{ path('app_shop_index') }}" style="color: #667eea; text-decoration: none;">
+            <a href="{{ path(r('SHOP').value) }}" style="color: #667eea; text-decoration: none;">
                 ← Retour à tous les produits
             </a>
         </p>
@@ -32,7 +32,7 @@
 
     <div class="products-grid">
         {% for product in products %}
-            <a href="{{ path('app_shop_product', {id: product.id}) }}" class="product-card">
+            <a href="{{ path(r('SHOP_PRODUCT').value, {id: product.id}) }}" class="product-card">
                 <div class="product-image">
                     {% if product.category.slug == 'skis' %}
                         🎿

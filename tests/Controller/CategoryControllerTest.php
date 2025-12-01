@@ -3,11 +3,14 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Category;
+use App\Entity\Product;
 use App\Tests\Factory\CategoryFactory;
+use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Constant\Route;
 
 final class CategoryControllerTest extends WebTestCase
 {
@@ -18,8 +21,23 @@ final class CategoryControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
+
+        // Authenticate as admin user
+        $adminUser = UserFactory::findOrCreate([
+            'email' => 'admin@test.com',
+        ], [
+            'roles' => ['ROLE_ADMIN'],
+        ]);
+        $this->client->loginUser($adminUser->_real());
+
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->categoryRepository = $this->manager->getRepository(Category::class);
+
+        // Delete products first to avoid foreign key constraint violations
+        $productRepository = $this->manager->getRepository(Product::class);
+        foreach ($productRepository->findAll() as $object) {
+            $this->manager->remove($object);
+        }
 
         foreach ($this->categoryRepository->findAll() as $object) {
             $this->manager->remove($object);
@@ -50,7 +68,7 @@ final class CategoryControllerTest extends WebTestCase
         CategoryFactory::createOne(['name' => 'Test Category 2']);
 
         $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->generateUrl('app_category_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl(Route::CATEGORY->value));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Category index');
@@ -64,7 +82,7 @@ final class CategoryControllerTest extends WebTestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('categoryNameProvider')]
     public function testNew(string $name, string $expectedSlug): void
     {
-        $this->client->request('GET', $this->generateUrl('app_category_new'));
+        $this->client->request('GET', $this->generateUrl(Route::CATEGORY_NEW->value));
 
         self::assertResponseStatusCodeSame(200);
 
@@ -90,7 +108,7 @@ final class CategoryControllerTest extends WebTestCase
             'description' => 'My Title',
         ]);
 
-        $this->client->request('GET', $this->generateUrl('app_category_show', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::CATEGORY_SHOW->value, ['id' => $fixture->getId()]));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Category');
@@ -109,7 +127,7 @@ final class CategoryControllerTest extends WebTestCase
         // Small delay to ensure updatedAt changes
         sleep(1);
 
-        $this->client->request('GET', $this->generateUrl('app_category_edit', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::CATEGORY_EDIT->value, ['id' => $fixture->getId()]));
 
         $this->client->submitForm('Update', [
             'category[name]' => 'Something New',
@@ -137,7 +155,7 @@ final class CategoryControllerTest extends WebTestCase
             'description' => 'Value',
         ]);
 
-        $this->client->request('GET', $this->generateUrl('app_category_show', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::CATEGORY_SHOW->value, ['id' => $fixture->getId()]));
         $this->client->submitForm('Delete');
 
         self::assertResponseRedirects();

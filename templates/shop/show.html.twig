@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container">
     <p style="margin-bottom: 1rem;">
-        <a href="{{ path('app_shop_category', {slug: product.category.slug}) }}" style="color: #667eea; text-decoration: none;">
+        <a href="{{ path(r('SHOP_CATEGORY').value, {slug: product.category.slug}) }}" style="color: #667eea; text-decoration: none;">
             ← Retour à {{ product.category.name }}
         </a>
     </p>

@@ -14,24 +14,24 @@
     <body>
         <header>
             <nav>
-                <a href="{{ path('app_home') }}" class="logo">❄️ Winter Sports Shop</a>
+                <a href="{{ path(r('HOME').value) }}" class="logo">❄️ Winter Sports Shop</a>
                 <ul class="nav-links">
-                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                    <li><a href="{{ path('app_shop_index') }}">Boutique</a></li>
-                    <li><a href="#">Panier</a></li>
+                    <li><a href="{{ path(r('HOME').value) }}">Accueil</a></li>
+                    <li><a href="{{ path(r('SHOP').value) }}">Boutique</a></li>
+                    <li><a href="{{ path(r('CART').value) }}">Panier</a></li>
                     {% if app.user %}
                         {# Utilisateur connecté #}
                         <li><a href="#">👤 {{ app.user.firstName }}</a></li>
-                        
+
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="{{ path('app_category_index') }}">⚙️ Admin</a></li>
+                            <li><a href="{{ path(r('CATEGORY').value) }}">⚙️ Admin</a></li>
                         {% endif %}
-                        
-                        <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+
+                        <li><a href="{{ path(r('LOGOUT').value) }}">Déconnexion</a></li>
                     {% else %}
                         {# Utilisateur non connecté #}
-                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
-                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                        <li><a href="{{ path(r('LOGIN').value) }}">Connexion</a></li>
+                        <li><a href="{{ path(r('REGISTER').value) }}">Inscription</a></li>
                     {% endif %}
                 </ul>
             </nav>

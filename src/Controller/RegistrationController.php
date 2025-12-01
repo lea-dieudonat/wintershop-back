@@ -2,20 +2,21 @@
 
 namespace App\Controller;
 
+use App\Constant\Route;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use App\Security\AppAuthenticator;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/register', name: 'app_register')]
+    #[RouteAttribute('/register', name: Route::REGISTER->value)]
     public function register(
         Request $request, 
         UserPasswordHasherInterface $passwordHasher, 
@@ -24,7 +25,7 @@ class RegistrationController extends AbstractController
         AppAuthenticator $authenticator
     ): Response {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute(Route::HOME->value);
         }
 
         // Logique d'enregistrement de l'utilisateur
@@ -63,7 +64,7 @@ class RegistrationController extends AbstractController
     }
 
     /*
-    #[Route('/verify-email', name: 'app_verify_email')]
+    #[Route('/verify-email', name: '_verify_email')]
     public function verifyEmail(): Response
     {
         // Logique de vérification de l'email

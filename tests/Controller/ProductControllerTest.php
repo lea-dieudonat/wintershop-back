@@ -4,11 +4,13 @@ namespace App\Tests\Controller;
 
 use App\Entity\Product;
 use App\Tests\Factory\CategoryFactory;
+use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Tests\Factory\ProductFactory;
+use App\Constant\Route;
 
 final class ProductControllerTest extends WebTestCase
 {
@@ -19,6 +21,15 @@ final class ProductControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
+
+        // Authenticate as admin user
+        $adminUser = UserFactory::findOrCreate([
+            'email' => 'admin@test.com',
+        ], [
+            'roles' => ['ROLE_ADMIN'],
+        ]);
+        $this->client->loginUser($adminUser->_real());
+
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->productRepository = $this->manager->getRepository(Product::class);
 
@@ -41,7 +52,7 @@ final class ProductControllerTest extends WebTestCase
         ProductFactory::createOne(['name' => 'Test Product 2', 'price' => '20.99']);
 
         $this->client->followRedirects();
-        $crawler = $this->client->request('GET', $this->generateUrl('app_product_index'));
+        $crawler = $this->client->request('GET', $this->generateUrl(Route::PRODUCT->value));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Product index');
@@ -56,7 +67,7 @@ final class ProductControllerTest extends WebTestCase
         // ProductFactory will handle category creation automatically
         $productData = ProductFactory::new()->withoutPersisting()->create();
 
-        $this->client->request('GET', $this->generateUrl('app_product_new'));
+        $this->client->request('GET', $this->generateUrl(Route::PRODUCT_NEW->value));
 
         self::assertResponseStatusCodeSame(200);
 
@@ -70,7 +81,7 @@ final class ProductControllerTest extends WebTestCase
             'product[category]' => $productData->getCategory()->getId(),
         ]);
 
-        self::assertResponseRedirects($this->generateUrl('app_product_index'));
+        self::assertResponseRedirects($this->generateUrl(Route::PRODUCT->value));
 
         self::assertSame(1, $this->productRepository->count([]));
         self::assertSame($productData->getName(), $this->productRepository->findAll()[0]->getName());
@@ -84,7 +95,7 @@ final class ProductControllerTest extends WebTestCase
             'stock' => 10,
         ]);
 
-        $this->client->request('GET', $this->generateUrl('app_product_show', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::PRODUCT_SHOW->value, ['id' => $fixture->getId()]));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Product');
@@ -109,7 +120,7 @@ final class ProductControllerTest extends WebTestCase
         // Small delay to ensure updatedAt changes
         sleep(1);
 
-        $this->client->request('GET', $this->generateUrl('app_product_edit', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::PRODUCT_EDIT->value, ['id' => $fixture->getId()]));
 
         $this->client->submitForm('Update', [
             'product[name]' => 'Updated Product',
@@ -121,7 +132,7 @@ final class ProductControllerTest extends WebTestCase
             'product[category]' => $newCategory->getId(),
         ]);
 
-        self::assertResponseRedirects($this->generateUrl('app_product_index'));
+        self::assertResponseRedirects($this->generateUrl(Route::PRODUCT->value));
 
         $updated = $this->productRepository->findAll();
 
@@ -146,10 +157,10 @@ final class ProductControllerTest extends WebTestCase
             'stock' => 5,
         ]);
 
-        $this->client->request('GET', $this->generateUrl('app_product_show', ['id' => $fixture->getId()]));
+        $this->client->request('GET', $this->generateUrl(Route::PRODUCT_SHOW->value, ['id' => $fixture->getId()]));
         $this->client->submitForm('Delete');
 
-        self::assertResponseRedirects($this->generateUrl('app_product_index'));
+        self::assertResponseRedirects($this->generateUrl(Route::PRODUCT->value));
         self::assertSame(0, $this->productRepository->count([]));
     }
 }

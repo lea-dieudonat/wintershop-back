@@ -2,16 +2,17 @@
 
 namespace App\Controller;
 
+use App\Constant\Route;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 
-#[Route('/shop')]
+#[RouteAttribute('/shop')]
 class ShopController extends AbstractController
 {
-    #[Route('/', name: 'app_shop_index')]
+    #[RouteAttribute('/', name: Route::SHOP->value)]
     public function index(ProductRepository $productRepository): Response
     {
         // Tous les produits actifs
@@ -19,14 +20,14 @@ class ShopController extends AbstractController
             ['isActive' => true],
             ['name' => 'ASC']
         );
-        
+
         return $this->render('shop/index.html.twig', [
             'products' => $products,
             'currentCategory' => null,
         ]);
     }
-    
-    #[Route('/category/{slug}', name: 'app_shop_category')]
+
+    #[RouteAttribute('/category/{slug}', name: Route::SHOP_CATEGORY->value)]
     public function category(
         string $slug,
         CategoryRepository $categoryRepository,
@@ -34,24 +35,24 @@ class ShopController extends AbstractController
     ): Response {
         // Trouver la catégorie par son slug
         $category = $categoryRepository->findOneBy(['slug' => $slug]);
-        
+
         if (!$category) {
             throw $this->createNotFoundException('Catégorie non trouvée');
         }
-        
+
         // Produits actifs de cette catégorie
         $products = $productRepository->findBy(
             ['category' => $category, 'isActive' => true],
             ['name' => 'ASC']
         );
-        
+
         return $this->render('shop/index.html.twig', [
             'products' => $products,
             'currentCategory' => $category,
         ]);
     }
-    
-    #[Route('/product/{id}', name: 'app_shop_product')]
+
+    #[RouteAttribute('/product/{id}', name: Route::SHOP_PRODUCT->value)]
     public function show(int $id, ProductRepository $productRepository): Response
     {
         $product = $productRepository->find($id);

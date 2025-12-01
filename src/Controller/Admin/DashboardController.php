@@ -9,13 +9,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Constant\Route;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Entity\Order;
 use App\Entity\User;
 
 #[IsGranted('ROLE_ADMIN')]
-#[AdminDashboard(routePath: '/admin', routeName: 'admin')]
+#[AdminDashboard(routePath: '/admin', routeName: Route::ADMIN->value)]
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
@@ -55,7 +56,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Users', 'fa fa-user', User::class);
 
         yield MenuItem::section('Settings');
-        yield MenuItem::linkToRoute('Back to the shop', 'fa fa-store', 'app_home');
+        yield MenuItem::linkToRoute('Back to the shop', 'fa fa-store', Route::HOME->value);
         yield MenuItem::linkToLogout('Logout', 'fa fa-sign-out-alt');
     }
 }

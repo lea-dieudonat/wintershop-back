@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
+use App\Constant\Route;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[RouteAttribute('/', name: Route::HOME->value)]
     public function index(
         CategoryRepository $categoryRepository,
         ProductRepository $productRepository

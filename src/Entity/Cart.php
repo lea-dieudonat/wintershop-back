@@ -6,6 +6,7 @@ use App\Repository\CartRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
 class Cart
@@ -22,10 +23,10 @@ class Cart
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
-    * Utilisateur propriétaire du panier.
-    * Relation OneToOne : un utilisateur = un panier actif.
-    * Le panier est créé automatiquement lors de l'inscription.
-    */
+     * Utilisateur propriétaire du panier.
+     * Relation OneToOne : un utilisateur = un panier actif.
+     * Le panier est créé automatiquement lors de l'inscription.
+     */
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'cart')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
@@ -34,12 +35,20 @@ class Cart
      * @var Collection<int, CartItem>
      */
     #[ORM\OneToMany(
-        targetEntity: CartItem::class, 
-        mappedBy: 'cart', 
+        targetEntity: CartItem::class,
+        mappedBy: 'cart',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
     private Collection $items;
+
+    #[ORM\Column(
+        type: Types::DECIMAL,
+        precision: 10,
+        scale: 2,
+        options: ['comment' => 'Prix total']
+    )]
+    private string $totalPrice = '0.00';
 
     public function __construct()
     {
@@ -124,6 +133,18 @@ class Cart
                 $item->setCart(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?string
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(string $totalPrice): static
+    {
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }

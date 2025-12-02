@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[RouteAttribute('/product', name: Route::PRODUCT->value)]
+#[RouteAttribute('/product')]
 #[IsGranted('ROLE_ADMIN')]
 final class ProductController extends AbstractController
 {
-    #[RouteAttribute(name: '', methods: ['GET'])]
+    #[RouteAttribute('', name: Route::PRODUCT->value, methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response
     {
         return $this->render('product/index.html.twig', [

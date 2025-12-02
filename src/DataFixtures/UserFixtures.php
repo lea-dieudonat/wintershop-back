@@ -11,43 +11,66 @@ class UserFixtures extends Fixture
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher
-    ) {
-    }
+    ) {}
 
     public function load(ObjectManager $manager): void
     {
         // Create an admin user
-        $admin = new User();
-        $admin->setEmail('admin@example.com');
-        $admin->setFirstName('Admin');
-        $admin->setLastName('User');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setCreatedAt(new \DateTimeImmutable());
-        $admin->setPassword(
-            $this->passwordHasher->hashPassword(
-                $admin,
-                'adminpassword'
-            )
-        );
-        $manager->persist($admin);
-        $this->addReference('user_admin', $admin);
+        $this->createUser($manager, 'admin@example.com', 'Admin', 'User', ['ROLE_ADMIN'], 'adminpassword', 'user_admin');
 
-        // Create a regular user
+        // Create multiple regular users (data-driven)
+        $regularUsers = [
+            ['email' => 'user1@example.com', 'firstName' => 'Jane', 'lastName' => 'Doe'],
+            ['email' => 'user2@example.com', 'firstName' => 'John', 'lastName' => 'Smith'],
+            ['email' => 'user3@example.com', 'firstName' => 'Alice', 'lastName' => 'Brown'],
+        ];
+
+        foreach ($regularUsers as $idx => $data) {
+            $this->createUser(
+                $manager,
+                $data['email'],
+                $data['firstName'],
+                $data['lastName'],
+                ['ROLE_USER'],
+                'userpassword',
+                'user_regular_' . ($idx + 1)
+            );
+        }
+
+        $manager->flush();
+    }
+
+    /**
+     * Helper to create and persist a User and optionally add a reference.
+     */
+    private function createUser(
+        ObjectManager $manager,
+        string $email,
+        string $firstName,
+        string $lastName,
+        array $roles,
+        string $plainPassword,
+        ?string $reference = null
+    ): User {
         $user = new User();
-        $user->setEmail('user@example.com');
-        $user->setFirstName('Jane');
-        $user->setLastName('Doe');
-        $user->setRoles(['ROLE_USER']);
+        $user->setEmail($email);
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setRoles($roles);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setPassword(
             $this->passwordHasher->hashPassword(
                 $user,
-                'userpassword'
+                $plainPassword
             )
         );
-        $manager->persist($user);
-        $this->addReference('user_regular', $user);
 
-        $manager->flush();
+        $manager->persist($user);
+
+        if ($reference) {
+            $this->addReference($reference, $user);
+        }
+
+        return $user;
     }
 }

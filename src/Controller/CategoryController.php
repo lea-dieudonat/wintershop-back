@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[RouteAttribute('/category', name: Route::CATEGORY->value)]
+#[RouteAttribute('/category')]
 #[IsGranted('ROLE_ADMIN')]
 final class CategoryController extends AbstractController
 {
-    #[RouteAttribute(name: '', methods: ['GET'])]
+    #[RouteAttribute('', name: Route::CATEGORY->value, methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
         return $this->render('category/index.html.twig', [

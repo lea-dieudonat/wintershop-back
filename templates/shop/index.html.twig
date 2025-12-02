@@ -32,7 +32,7 @@
 
     <div class="products-grid">
         {% for product in products %}
-            <a href="{{ path(r('SHOP_PRODUCT').value, {id: product.id}) }}" class="product-card">
+            <a href="{{ path(r('SHOP_PRODUCT').value, {slug: product.slug}) }}" class="product-card">
                 <div class="product-image">
                     {% if product.category.slug == 'skis' %}
                         🎿

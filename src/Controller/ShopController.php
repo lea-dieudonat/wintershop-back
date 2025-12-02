@@ -52,11 +52,11 @@ class ShopController extends AbstractController
         ]);
     }
 
-    #[RouteAttribute('/product/{id}', name: Route::SHOP_PRODUCT->value)]
-    public function show(int $id, ProductRepository $productRepository): Response
+    #[RouteAttribute('/product/{slug}', name: Route::SHOP_PRODUCT->value)]
+    public function show(string $slug, ProductRepository $productRepository): Response
     {
-        $product = $productRepository->find($id);
-        
+        $product = $productRepository->findOneBy(['slug' => $slug]);
+
         if (!$product || !$product->isActive()) {
             throw $this->createNotFoundException('Produit non trouvé');
         }

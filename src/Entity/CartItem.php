@@ -35,6 +35,9 @@ class CartItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Cart $cart = null;
 
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private string $unitPrice;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -91,5 +94,23 @@ class CartItem
         $this->cart = $cart;
 
         return $this;
+    }
+
+    public function getUnitPrice(): ?string
+    {
+        return $this->unitPrice;
+    }
+
+    public function setUnitPrice(string $unitPrice): static
+    {
+        $this->unitPrice = $unitPrice;
+
+        return $this;
+    }
+
+    // méthode helper pour calculer le total d'une ligne
+    public function getTotalPrice(): string
+    {
+        return bcmul($this->unitPrice, (string) $this->quantity, 2);
     }
 }

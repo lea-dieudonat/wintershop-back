@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Product;
+use App\Entity\Cart;
+use App\Entity\CartItem;
 use App\Tests\Factory\CategoryFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,17 +24,39 @@ final class ProductControllerTest extends WebTestCase
     {
         $this->client = static::createClient();
 
-        // Authenticate as admin user
-        $adminUser = UserFactory::findOrCreate([
-            'email' => 'admin@test.com',
-        ], [
-            'roles' => ['ROLE_ADMIN'],
-        ]);
-        $this->client->loginUser($adminUser->_real());
-
         $this->manager = static::getContainer()->get('doctrine')->getManager();
+
+        // Ensure there is an admin user with ROLE_ADMIN and log them in
+        $existingUser = $this->manager->getRepository(\App\Entity\User::class)->findOneBy(['email' => 'admin@test.com']);
+        if ($existingUser) {
+            // make sure the existing user has ROLE_ADMIN
+            if (!in_array('ROLE_ADMIN', $existingUser->getRoles(), true)) {
+                $existingUser->setRoles(array_unique(array_merge($existingUser->getRoles(), ['ROLE_ADMIN'])));
+                $this->manager->persist($existingUser);
+                $this->manager->flush();
+            }
+            $this->client->loginUser($existingUser);
+        } else {
+            $adminUser = UserFactory::createOne([
+                'email' => 'admin@test.com',
+                'roles' => ['ROLE_ADMIN'],
+            ])->_real();
+            $this->client->loginUser($adminUser);
+        }
         $this->productRepository = $this->manager->getRepository(Product::class);
 
+        // Clean up related entities to avoid foreign key constraint errors
+        // 1. Remove cart items (they reference both cart and product)
+        foreach ($this->manager->getRepository(CartItem::class)->findAll() as $cartItem) {
+            $this->manager->remove($cartItem);
+        }
+
+        // 2. Remove carts
+        foreach ($this->manager->getRepository(Cart::class)->findAll() as $cart) {
+            $this->manager->remove($cart);
+        }
+
+        // 3. Remove products
         foreach ($this->productRepository->findAll() as $object) {
             $this->manager->remove($object);
         }

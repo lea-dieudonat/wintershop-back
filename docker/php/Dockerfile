@@ -6,6 +6,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 RUN install-php-extensions opcache iconv soap
+RUN install-php-extensions bcmath
 RUN install-php-extensions zip intl fileinfo
 RUN install-php-extensions pdo redis mysqli pdo_mysql
 RUN install-php-extensions gd

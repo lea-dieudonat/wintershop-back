@@ -1,0 +1,108 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Mon Panier - Winter Sports Shop{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/cart.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Flash messages -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1>Mon Panier</h1>
+            {% if cart.items|length > 0 %}
+                <span class="cart-badge">{{ cart.items|length }}</span>
+            {% endif %}
+        </div>
+        
+        {% if cart.items|length == 0 %}
+            <!-- Empty Cart -->
+            <div class="empty-cart">
+                <div class="empty-cart-icon">🛒</div>
+                <h2>Votre panier est vide.</h2>
+                <p>Découvrez nos produits et ajoutez vos articles préférés !</p>
+                <a href="{{ path(r('SHOP').value) }}" class="btn btn-primary">Continuer mes achats</a>
+            </div>
+        {% else %}
+            <!-- Cart items -->
+            <div class="cart-items">
+                {% for item in cart.items %}
+                    <div class="cart-item">
+                        <img 
+                            src="{{ item.product.imageUrl ? item.product.imageUrl : 'https://via.placeholder.com/100' }}" 
+                            alt="{{ item.product.name }}"
+                            class="cart-item-image"
+                        >
+                        
+                        <div class="cart-item-info">
+                            <h3>{{ item.product.name }}</h3>
+                            <p>Prix unitaire : {{ item.unitPrice }} €</p>
+                            <p>Stock disponible : {{ item.product.stock }}</p>
+                        </div>
+
+                        <div class="cart-item-price">
+                            {{ item.unitPrice * item.quantity }} €
+                        </div>
+
+                        <form method="post" action="{{ path(r('CART_UPDATE').value, {id: item.id}) }}" class="quantity-controls">
+                            <input
+                                type="number"
+                                name="quantity"
+                                value="{{ item.quantity }}"
+                                min="1"
+                                max="{{ item.product.stock }}"
+                                class="quantity-input"
+                                onchange="this.form.submit()"
+                            >
+                            <button type="submit" class="quantity-btn">✓</button>
+                        </form>
+
+                        <form method="post" action="{{ path(r('CART_REMOVE').value, {id: item.id}) }}" onsubmit="return confirm('Voulez-vous vraiment retirer cet article ?');">
+                            <button type="submit" class="remove-btn">🗑️ Retirer</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Cart summary -->
+            <div class="cart-summary">
+                <h2>Récapitulatif</h2>
+                <div class="summary-line">
+                    <span>Sous-total ({{ cart.items|length }} article(s))</span>
+                    <span class="cart-subtotal">{{ cart.totalPrice }} €</span>
+                </div>
+                <div class="summary-line">
+                    <span>Total</span>
+                    <span class="cart-total">{{ cart.totalPrice }} €</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="cart-actions">
+                <a href="{{ path(r('SHOP').value) }}" class="btn btn-secondary">
+                    ← Continuer mes achats
+                </a>
+
+                <form method="post" action="{{ path(r('CART_CLEAR').value) }}" style="flex: 0;" onsubmit="return confirm('Voulez-vous vraiment vider le panier ?');">
+                    <button type="submit" class="btn btn-danger">
+                        Vider le panier
+                    </button>
+                </form>
+
+                <button class="btn btn-primary" disabled>
+                    Passer commande →
+                </button>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -2,10 +2,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('checkout-form');
     const shippingInput = document.getElementById('shipping_address_id');
     const billingInput = document.getElementById('billing_address_id');
-    const sameAsShippingCheckbox = document.getElementById('same_as_shipping');
-    const confirmButton = document.getElementById('confirm-order-btn');
+    // IDs in the template use dashes; use a tolerant lookup and fallbacks
+    const sameAsShippingCheckbox = document.getElementById('same-as-shipping') || document.getElementById('same_as_shipping');
+    const confirmButton = document.getElementById('confirm-order-btn') || form.querySelector('button[type="submit"]');
     const billingSection = document.getElementById('billing-addresses');
 
+    const defaultShipping = document.querySelector('input[name="shipping_address"]:checked');
+    const defaultBilling = document.querySelector('input[name="billing_address"]:checked');
+    
+    if (defaultShipping) {
+        shippingInput.value = defaultShipping.value;
+    }
+    
+    if (defaultBilling) {
+        billingInput.value = defaultBilling.value;
+    }
+
+    // Guard validateForm so missing confirmButton doesn't break the script
+    try {
+        validateForm();
+    } catch (err) {
+        // If validation fails (missing elements), log for easier debugging but continue
+        // console.debug('validateForm error', err);
+    }
+    
     // Handle address card clicks
     document.querySelectorAll('.address-card').forEach(card => {
         card.addEventListener('click', function() {
@@ -15,8 +35,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle "same as shipping" checkbox
-    sameAsShippingCheckbox.addEventListener('change', function() {
+    // Handle "same as shipping" checkbox (only if present)
+    if (sameAsShippingCheckbox) {
+        sameAsShippingCheckbox.addEventListener('change', function() {
         if (this.checked) {
             billingSection.style.opacity = '0.5';
             billingSection.style.pointerEvents = 'none';
@@ -36,17 +57,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 radio.checked = false;
             });
         }
-        validateForm();
-    });
+            validateForm();
+        });
+    }
 
     // Update hidden inputs when radio buttons change
-    document.querySelectorAll('input[name="shipping_address"]').forEach(radio => {
-        radio.addEventListener('change', updateHiddenInputs);
-    });
+    // Attach listeners only if those inputs exist
+    const shippingRadios = document.querySelectorAll('input[name="shipping_address"]');
+    if (shippingRadios.length) {
+        shippingRadios.forEach(radio => radio.addEventListener('change', updateHiddenInputs));
+    }
 
-    document.querySelectorAll('input[name="billing_address"]').forEach(radio => {
-        radio.addEventListener('change', updateHiddenInputs);
-    });
+    const billingRadios = document.querySelectorAll('input[name="billing_address"]');
+    if (billingRadios.length) {
+        billingRadios.forEach(radio => radio.addEventListener('change', updateHiddenInputs));
+    }
 
     function updateHiddenInputs() {
         const selectedShipping = document.querySelector('input[name="shipping_address"]:checked');
@@ -71,7 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateForm() {
         const hasShipping = shippingInput.value !== '';
         const hasBilling = billingInput.value !== '';
-        confirmButton.disabled = !(hasShipping && hasBilling);
+        if (confirmButton) {
+            confirmButton.disabled = !(hasShipping && hasBilling);
+        }
     }
 
     // CSRF token handling

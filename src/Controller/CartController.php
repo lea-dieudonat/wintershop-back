@@ -22,26 +22,27 @@ class CartController extends AbstractController
         private EntityManagerInterface $entityManager,
         private CartRepository $cartRepository,
         private ProductRepository $productRepository,
-    )
-    {
-    }
+    ) {}
 
     #[RouteAttribute('/', name: Route::CART->value, methods: ['GET'])]
     public function index(): Response
     {
         $cart = $this->getOrCreateCart();
 
-        // Recalculate totalPrice for display in case items were created
-        // outside of controller (fixtures/factories) and DB snapshot isn't
-        // up-to-date with the Cart.totalPrice field.
-        $totalFloat = 0.0;
-        foreach ($cart->getItems() as $item) {
-            $totalFloat += (float) $item->getProduct()->getPrice() * $item->getQuantity();
+        $this->cartRepository->recalculateTotal($cart);
+
+        $unavailableItems = $this->cartRepository->removeUnavailableItems($cart);
+
+        if (count($unavailableItems) > 0) {
+            $this->addFlash('warning', sprintf(
+                '%d produit(s) ont été retirés de votre panier car ils ne sont plus disponibles.',
+                count($unavailableItems)
+            ));
         }
-        $cart->setTotalPrice(number_format($totalFloat, 2, '.', ''));
 
         return $this->render('cart/index.html.twig', [
             'cart' => $cart,
+            'unavailableItems' => $unavailableItems,
         ]);
     }
 
@@ -92,13 +93,7 @@ class CartController extends AbstractController
         }
         $cart->setUpdatedAt(new \DateTimeImmutable());
 
-        // Recalculate cart total price
-        $total = '0.00';
-        foreach ($cart->getItems() as $item) {
-            $line = \bcmul($item->getUnitPrice(), (string) $item->getQuantity(), 2);
-            $total = \bcadd($total, $line, 2);
-        }
-        $cart->setTotalPrice($total);
+        $this->cartRepository->recalculateTotal($cart);
 
         $this->entityManager->flush();
         $this->addFlash('success', 'Product added to cart successfully.');
@@ -130,14 +125,7 @@ class CartController extends AbstractController
         $cartItem->setQuantity($quantity);
         $cart->setUpdatedAt(new \DateTimeImmutable());
 
-        // Recalculate cart total price
-        $cart = $cartItem->getCart();
-        $total = '0.00';
-        foreach ($cart->getItems() as $item) {
-            $line = \bcmul($item->getUnitPrice(), (string) $item->getQuantity(), 2);
-            $total = \bcadd($total, $line, 2);
-        }
-        $cart->setTotalPrice($total);
+        $this->cartRepository->recalculateTotal($cart);
 
         $this->entityManager->flush();
 
@@ -159,13 +147,7 @@ class CartController extends AbstractController
 
         $this->entityManager->remove($cartItem);
 
-        // Recalculate cart total price after removal
-        $total = '0.00';
-        foreach ($cart->getItems() as $item) {
-            $line = \bcmul($item->getUnitPrice(), (string) $item->getQuantity(), 2);
-            $total = \bcadd($total, $line, 2);
-        }
-        $cart->setTotalPrice($total);
+        $this->cartRepository->recalculateTotal($cart);
 
         $this->entityManager->flush();
 

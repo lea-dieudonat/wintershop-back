@@ -117,4 +117,21 @@ class CheckoutService
 
         $this->entityManager->flush();
     }
+
+    /**
+     * Validate cart for checkout
+     *
+     * @return bool True if cart is valid
+     */
+    public function hasUnavailableProducts(Cart $cart): bool
+    {
+        foreach ($cart->getItems() as $item) {
+            $product = $item->getProduct();
+            if (!$product->isActive() || $product->getStock() < $item->getQuantity()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

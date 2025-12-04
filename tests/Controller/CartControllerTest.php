@@ -282,6 +282,7 @@ final class CartControllerTest extends WebTestCase
         $product2 = ProductFactory::createOne([
             'price' => 49.99,
             'stock' => 10,
+            'isActive' => true,
             'category' => CategoryFactory::createOne(),
         ])->_real();
 

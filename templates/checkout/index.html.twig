@@ -29,14 +29,19 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="address-card" data-address-id="{{ address.id }}" data-address-type="shipping">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="shipping_address" value="{{ address.id }}" id="shipping_{{ address.id }}">
+                                            <input class="form-check-input" type="radio" name="shipping_address" value="{{ address.id }}" id="shipping_{{ address.id }}" {% if address.isDefault %}checked{% endif %}>
                                             <label class="form-check-label w-100" for="shipping_{{ address.id }}">
                                                 <div class="address-content">
                                                     {% if address.isDefault %}
                                                     <span class="badge bg-success ms-2">Par défaut</span>
                                                     {% endif %}
                                                     <br>
-                                                    <p>{{ address.street }}, {{ address.city }}, {{ address.postalCode }}</p>
+                                                    <p>{{ address.street }}, 
+                                                        {% if address.additionalInfo %}
+                                                        {{ address.additionalInfo }},
+                                                        {% endif %}
+                                                        <br>
+                                                        {{ address.city }}, {{ address.postalCode }}</p>
                                                     <p>{{ address.country }}</p>
                                                 </div>
                                             </label>
@@ -65,14 +70,18 @@
                                 {% for address in addresses %}
                                     <div class="col-md-6 mb-3">
                                         <div class="address-card">
-                                            <input type="radio" name="billing_address" value="{{ address.id }}" id="billing_{{ address.id }}">
+                                            <input type="radio" name="billing_address" value="{{ address.id }}" id="billing_{{ address.id }}" {% if address.isDefault %}checked{% endif %}>
                                             <label for="billing_{{ address.id }}" class="form-check-label w-100"></label>
                                             <div class="address-content">
-                                                <strong>{{ address.firstName }} {{ address.lastName }}</strong>
                                                 {% if address.isDefault %}
-                                                    <span class="default-badge">Par défaut</span>
+                                                    <span class="badge bg-success ms-2">Par défaut</span>
                                                 {% endif %}
-                                                <p>{{ address.street }}, {{ address.city }}, {{ address.postalCode }}</p>
+                                                <p>{{ address.street }}, 
+                                                    {% if address.additionalInfo %}
+                                                    {{ address.additionalInfo }},
+                                                    {% endif %}
+                                                    <br>
+                                                    {{ address.city }}, {{ address.postalCode }}</p>
                                                 <p>{{ address.country }}</p>
                                             </div>
                                         </div>

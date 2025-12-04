@@ -6,6 +6,7 @@ use App\Constant\Route;
 use App\Entity\Cart;
 use App\Entity\User;
 use App\Entity\Address;
+use App\Repository\CartRepository;
 use App\Service\CheckoutService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,8 @@ class CheckoutController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private CheckoutService $checkoutService
+        private CheckoutService $checkoutService,
+        private CartRepository $cartRepository
     ) {}
 
     #[RouteAttribute('/', name: Route::CHECKOUT->value)]
@@ -28,20 +30,25 @@ class CheckoutController extends AbstractController
     {
         $cart = $this->getCart();
 
-        // Redirect if cart is empty
+        $this->cartRepository->recalculateTotal($cart);
+
         if ($cart->getItems()->isEmpty()) {
             $this->addFlash('warning', 'Your cart is empty. Add some products before checkout.');
             return $this->redirectToRoute(Route::SHOP->value);
+        }
+
+        if ($this->checkoutService->hasUnavailableProducts($cart)) {
+            $this->addFlash('error', 'Certains produits de votre panier ne sont plus disponibles. Veuillez vérifier votre panier.');
+            return $this->redirectToRoute(Route::CART->value);
         }
 
         /** @var User $user */
         $user = $this->getUser();
         $addresses = $user->getAddresses();
 
-        // If user has no addresses, redirect to address creation
         if ($addresses->isEmpty()) {
             $this->addFlash('info', 'Please add a shipping address before checkout.');
-            return $this->redirectToRoute('profile_address_new'); // TODO: à créer plus tard
+            return $this->redirectToRoute('profile_address_new');
         }
 
         return $this->render('checkout/index.html.twig', [

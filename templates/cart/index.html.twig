@@ -20,6 +20,27 @@
     <div class="cart-container">
         <div class="cart-header">
             <h1>Mon Panier</h1>
+            
+            {% if unavailableItems is defined and unavailableItems|length > 0 %}
+                <div class="alert alert-warning" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        Produits retirés de votre panier
+                    </h5>
+                    <p class="mb-2">Les produits suivants ont été automatiquement retirés car ils ne sont plus disponibles :</p>
+                    <ul class="mb-0">
+                        {% for item in unavailableItems %}
+                            <li>
+                                <strong>{{ item.name }}</strong> - {{ item.reason }}
+                                {% if item.reason == 'Stock insuffisant' %}
+                                    (Demandé : {{ item.requestedQty }}, Disponible : {{ item.availableStock }})
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
             {% if cart.items|length > 0 %}
                 <span class="cart-badge">{{ cart.items|length }}</span>
             {% endif %}

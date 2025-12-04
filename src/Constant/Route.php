@@ -11,31 +11,36 @@ enum Route: string
     case REGISTER = 'register';
     case ADMIN = 'admin';
 
-    // Shop routes
+        // Shop routes
     case SHOP = 'shop';
     case SHOP_CATEGORY = 'shop_category';
     case SHOP_PRODUCT = 'shop_product';
 
-    // Product routes
+        // Product routes
     case PRODUCT = 'product';
     case PRODUCT_SHOW = 'product_show';
     case PRODUCT_EDIT = 'product_edit';
     case PRODUCT_NEW = 'product_new';
     case PRODUCT_DELETE = 'product_delete';
 
-    // Category routes
+        // Category routes
     case CATEGORY = 'category';
     case CATEGORY_SHOW = 'category_show';
     case CATEGORY_EDIT = 'category_edit';
     case CATEGORY_NEW = 'category_new';
     case CATEGORY_DELETE = 'category_delete';
 
-    // Cart routes
+        // Cart routes
     case CART = 'cart';
     case CART_ADD = 'cart_add';
     case CART_UPDATE = 'cart_update';
     case CART_REMOVE = 'cart_remove';
     case CART_CLEAR = 'cart_clear';
+
+        // Checkout routes
+    case CHECKOUT = 'checkout';
+    case CHECKOUT_CONFIRM = 'checkout_confirm';
+    case CHECKOUT_SUCCESS = 'checkout_success';
 
     /**
      * Generate a child route name

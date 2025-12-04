@@ -1,15 +1,44 @@
 FROM php:8.3-fpm-alpine
 
-RUN apk --no-cache add curl git wget bash dpkg
+# Runtime packages used by the container
+RUN apk --no-cache add \
+	curl \
+	git \
+	wget \
+	bash \
+	dpkg \
+	pkgconf
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
 
-RUN install-php-extensions opcache iconv soap
-RUN install-php-extensions bcmath
-RUN install-php-extensions zip intl fileinfo
-RUN install-php-extensions pdo redis mysqli pdo_mysql
-RUN install-php-extensions gd
+# Install build dependencies temporarily, compile the requested PHP extensions,
+# then remove build deps to keep the final image small.
+RUN apk --no-cache add --virtual .build-deps \
+	 autoconf \
+	 build-base \
+	 linux-headers \
+	 zlib-dev \
+	 libzip-dev \
+	 icu-dev \
+	 libpng-dev \
+	 libjpeg-turbo-dev \
+	 freetype-dev \
+	pkgconf \
+ && install-php-extensions \
+	 opcache \
+	 iconv \
+	 soap \
+	 bcmath \
+	 zip \
+	 intl \
+	 fileinfo \
+	 pdo \
+	 redis \
+	 mysqli \
+	 pdo_mysql \
+	 gd \
+ && apk del .build-deps
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 

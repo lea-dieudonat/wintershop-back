@@ -5,6 +5,8 @@ namespace App\Tests\Controller;
 use App\Entity\Product;
 use App\Entity\Cart;
 use App\Entity\CartItem;
+use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Tests\Factory\CategoryFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,23 +47,7 @@ final class ProductControllerTest extends WebTestCase
         }
         $this->productRepository = $this->manager->getRepository(Product::class);
 
-        // Clean up related entities to avoid foreign key constraint errors
-        // 1. Remove cart items (they reference both cart and product)
-        foreach ($this->manager->getRepository(CartItem::class)->findAll() as $cartItem) {
-            $this->manager->remove($cartItem);
-        }
-
-        // 2. Remove carts
-        foreach ($this->manager->getRepository(Cart::class)->findAll() as $cart) {
-            $this->manager->remove($cart);
-        }
-
-        // 3. Remove products
-        foreach ($this->productRepository->findAll() as $object) {
-            $this->manager->remove($object);
-        }
-
-        $this->manager->flush();
+        // Cleanup is handled by DamaDoctrineTestBundle; no manual purge needed here.
     }
 
     private function generateUrl(string $route, array $parameters = []): string

@@ -4,6 +4,8 @@ namespace App\Tests\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Tests\Factory\CategoryFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,28 +24,28 @@ final class CategoryControllerTest extends WebTestCase
     {
         $this->client = static::createClient();
 
-        // Authenticate as admin user
-        $adminUser = UserFactory::findOrCreate([
-            'email' => 'admin@test.com',
-        ], [
-            'roles' => ['ROLE_ADMIN'],
-        ]);
-        $this->client->loginUser($adminUser->_real());
-
         $this->manager = static::getContainer()->get('doctrine')->getManager();
+
+        // Ensure there is an admin user with ROLE_ADMIN and log them in
+        $existingUser = $this->manager->getRepository(\App\Entity\User::class)->findOneBy(['email' => 'admin@test.com']);
+        if ($existingUser) {
+            if (!in_array('ROLE_ADMIN', $existingUser->getRoles(), true)) {
+                $existingUser->setRoles(array_unique(array_merge($existingUser->getRoles(), ['ROLE_ADMIN'])));
+                $this->manager->persist($existingUser);
+                $this->manager->flush();
+            }
+            $this->client->loginUser($existingUser);
+        } else {
+            $adminUser = UserFactory::createOne([
+                'email' => 'admin@test.com',
+                'roles' => ['ROLE_ADMIN'],
+            ])->_real();
+            $this->client->loginUser($adminUser);
+        }
+
         $this->categoryRepository = $this->manager->getRepository(Category::class);
 
-        // Delete products first to avoid foreign key constraint violations
-        $productRepository = $this->manager->getRepository(Product::class);
-        foreach ($productRepository->findAll() as $object) {
-            $this->manager->remove($object);
-        }
-
-        foreach ($this->categoryRepository->findAll() as $object) {
-            $this->manager->remove($object);
-        }
-
-        $this->manager->flush();
+        // Cleanup handled by DamaDoctrineTestBundle (transactional tests); manual purges removed.
     }
 
     private function generateUrl(string $route, array $parameters = []): string

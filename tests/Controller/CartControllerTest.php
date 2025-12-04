@@ -9,12 +9,14 @@ use App\Entity\Product;
 use App\Entity\Cart;
 use App\Entity\CartItem;
 use App\Entity\Category;
+use App\Entity\Order;
+use App\Entity\OrderItem;
+use App\Entity\Address;
 use App\Tests\Factory\UserFactory;
 use App\Tests\Factory\ProductFactory;
 use App\Tests\Factory\CategoryFactory;
 use App\Tests\Factory\CartFactory;
 use App\Tests\Factory\CartItemFactory;
-use App\Constant\Route;
 
 final class CartControllerTest extends WebTestCase
 {
@@ -28,33 +30,7 @@ final class CartControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get(EntityManagerInterface::class);
 
-        // Clean up in correct order to respect foreign key constraints
-        // 1. Remove cart items (they reference both cart and product)
-        foreach ($this->manager->getRepository(CartItem::class)->findAll() as $cartItem) {
-            $this->manager->remove($cartItem);
-        }
-
-        // 2. Remove carts
-        foreach ($this->manager->getRepository(Cart::class)->findAll() as $cart) {
-            $this->manager->remove($cart);
-        }
-
-        // 3. Remove products (which reference categories)
-        foreach ($this->manager->getRepository(Product::class)->findAll() as $product) {
-            $this->manager->remove($product);
-        }
-
-        // 4. Remove categories
-        foreach ($this->manager->getRepository(Category::class)->findAll() as $category) {
-            $this->manager->remove($category);
-        }
-
-        // 5. Remove users (after carts since carts reference users)
-        foreach ($this->manager->getRepository(User::class)->findAll() as $user) {
-            $this->manager->remove($user);
-        }
-
-        $this->manager->flush();
+        // Cleanup is handled by DamaDoctrineTestBundle (transaction rollback); manual purges removed.
 
         // Create fresh test user
         $this->user = UserFactory::createOne([
@@ -93,7 +69,7 @@ final class CartControllerTest extends WebTestCase
         $this->client->loginUser($this->user);
         $this->client->request('POST', '/cart/add/' . $this->product->getId(), ['quantity' => 2]);
         $this->assertResponseRedirects('/cart/');
-        
+
         // Check that the cart now contains the product
         $cart = $this->manager->getRepository(Cart::class)->findOneBy(['user' => $this->user]);
         $this->assertNotNull($cart);
@@ -166,7 +142,7 @@ final class CartControllerTest extends WebTestCase
             'quantity' => 5,
         ]);
 
-    $this->assertResponseRedirects('/cart/');
+        $this->assertResponseRedirects('/cart/');
 
         // Verify the update
         $this->manager->refresh($cartItem->_real());
@@ -191,7 +167,7 @@ final class CartControllerTest extends WebTestCase
             'quantity' => 20,
         ]);
 
-    $this->assertResponseRedirects('/cart/');
+        $this->assertResponseRedirects('/cart/');
 
         // Verify that the quantity has not changed
         $this->manager->refresh($cartItem->_real());

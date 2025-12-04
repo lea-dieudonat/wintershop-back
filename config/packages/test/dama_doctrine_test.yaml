@@ -1,0 +1,6 @@
+## Configuration for DamaDoctrineTestBundle
+# This bundle wraps tests in a transaction and rolls back after each test,
+# making test DB isolation fast without manual cleanup.
+dama_doctrine_test:
+    # Use a static connection to speed up tests. Recommended for most setups.
+    enable_static_connection: true

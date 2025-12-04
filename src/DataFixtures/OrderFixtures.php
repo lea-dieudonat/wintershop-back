@@ -16,27 +16,33 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Récupérer des users et produits existants
         $users = $manager->getRepository(User::class)->findAll();
         $products = $manager->getRepository(Product::class)->findAll();
 
         if (empty($users) || empty($products)) {
-            return; // Pas de données pour créer des commandes
+            return;
         }
 
         for ($i = 1; $i <= 10; $i++) {
             $user = $users[array_rand($users)];
 
-            // Créer les adresses
-            $shippingAddress = $this->createAddress($user, $i, $manager);
-            $billingAddress = $this->createAddress($user, $i, $manager);
+            // Récupérer les adresses existantes de l'utilisateur
+            $userAddresses = $manager->getRepository(Address::class)->findBy(['user' => $user]);
+
+            if (empty($userAddresses)) {
+                continue; // Pas d'adresses pour cet user, on passe
+            }
+
+            // Choisir des adresses aléatoires parmi celles de l'utilisateur
+            $shippingAddress = $userAddresses[array_rand($userAddresses)];
+            $billingAddress = $userAddresses[array_rand($userAddresses)];
 
             $order = new Order();
             $order->setUser($user);
             $order->setShippingAddress($shippingAddress);
             $order->setBillingAddress($billingAddress);
 
-            $status = match($i % 5) {
+            $status = match ($i % 5) {
                 0 => OrderStatus::PENDING,
                 1 => OrderStatus::PAID,
                 2 => OrderStatus::SHIPPED,
@@ -45,7 +51,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             };
             $order->setStatus($status);
 
-            $totalAmount = 0;
+            $totalAmount = '0.00';
 
             // Ajouter entre 1 et 4 produits à la commande
             $itemCount = rand(1, 4);
@@ -59,34 +65,20 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
                 $orderItem->setQuantity($quantity);
                 $orderItem->setUnitPrice($product->getPrice());
 
-                $totalItem = $product->getPrice() * $quantity;
+                // Utiliser bcmath pour les calculs de prix
+                $totalItem = bcmul($product->getPrice(), (string)$quantity, 2);
                 $orderItem->setTotalPrice($totalItem);
 
-                $totalAmount += $totalItem;
+                $totalAmount = bcadd($totalAmount, $totalItem, 2);
 
                 $manager->persist($orderItem);
             }
+
             $order->setTotalAmount($totalAmount);
             $manager->persist($order);
         }
+
         $manager->flush();
-    }
-
-    private function createAddress(User $user, int $orderNumber, ObjectManager $manager): Address
-    {
-        $address = new Address();
-        $address->setFirstName($user->getFirstName());
-        $address->setLastName($user->getLastName());
-        $address->setStreet($orderNumber . ' rue Sésame');
-        $address->setCity('Chamonix');
-        $address->setPostalCode('74400');
-        $address->setCountry('France');
-        $address->setPhoneNumber('0123456789');
-        $address->setUser($user);
-
-        $manager->persist($address);
-
-        return $address;
     }
 
     public function getDependencies(): array
@@ -94,6 +86,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         return [
             UserFixtures::class,
             ProductFixtures::class,
+            AddressFixtures::class, // Nouvelle dépendance !
         ];
     }
 }

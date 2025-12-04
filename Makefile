@@ -98,6 +98,10 @@ db-reset: ## Reset database (drop, create, migrate)
 	@make db-create
 	@make db-migrate
 
+factory: ## Generate test factories
+	@echo "$(YELLOW)Generating test factories...$(NC)"
+	docker compose exec php php bin/console make:factory --test
+
 fixtures: ## Load fixtures
 	@echo "$(YELLOW)Loading fixtures...$(NC)"
 	docker compose exec php php bin/console doctrine:fixtures:load --no-interaction

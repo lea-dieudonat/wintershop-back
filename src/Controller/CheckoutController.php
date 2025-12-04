@@ -48,7 +48,8 @@ class CheckoutController extends AbstractController
 
         if ($addresses->isEmpty()) {
             $this->addFlash('info', 'Please add a shipping address before checkout.');
-            return $this->redirectToRoute('profile_address_new');
+            //return $this->redirectToRoute('profile_address_new'); TODO
+            return $this->redirectToRoute(Route::SHOP->value);
         }
 
         return $this->render('checkout/index.html.twig', [

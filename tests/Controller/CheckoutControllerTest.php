@@ -4,16 +4,16 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Entity\User;
-use App\Entity\Cart;
 use App\Tests\Factory\AddressFactory;
 use App\Tests\Factory\CartFactory;
 use App\Tests\Factory\CartItemFactory;
 use App\Tests\Factory\CategoryFactory;
+use App\Tests\Factory\OrderFactory;
+use App\Tests\Factory\OrderItemFactory;
 use App\Tests\Factory\ProductFactory;
 use App\Tests\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Order;
-use App\Entity\OrderItem;
 use App\Enum\OrderStatus;
 
 final class CheckoutControllerTest extends WebTestCase
@@ -29,7 +29,7 @@ final class CheckoutControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->manager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $this->user = \App\Tests\Factory\UserFactory::createOne([
+        $this->user = UserFactory::createOne([
             'email' => 'test@example.com',
             'roles' => ['ROLE_USER'],
         ])->_real();
@@ -74,14 +74,12 @@ final class CheckoutControllerTest extends WebTestCase
     // test redirect when cart is empty
     public function testRedirectWhenEmptyCart(): void
     {
-        // Simulate logged-in user
         $this->client->loginUser($this->user);
 
-        $cart = new Cart();
-        $cart->setUser($this->user);
-        $cart->setTotalPrice('0.00');
-        $this->manager->persist($cart);
-        $this->manager->flush();
+        CartFactory::createOne([
+            'user' => $this->user,
+            'totalPrice' => '0.00',
+        ]);
 
         $this->client->request('GET', '/checkout/');
         $this->assertResponseRedirects('/shop/');
@@ -90,7 +88,6 @@ final class CheckoutControllerTest extends WebTestCase
     // test redirect if addresses are missing
     public function testRedirectWhenNoAddresses(): void
     {
-        // Simulate logged-in user without addresses
         $this->client->loginUser($this->user);
         // Simulate non-empty cart
         $cart = CartFactory::createOne(['user' => $this->user])->_real();
@@ -136,9 +133,17 @@ final class CheckoutControllerTest extends WebTestCase
             'quantity' => 2,
             'unitPrice' => '199.99',
         ]);
-        // Submit checkout form
+
+        // Load the checkout page to get the CSRF token from the form
+        $crawler = $this->client->request('GET', '/checkout/');
+        $this->assertResponseIsSuccessful();
+
+        // Extract CSRF token from the hidden input field
+        $token = $crawler->filter('input[name="_csrf_token"]')->attr('value');
+
+        // Submit checkout form with the extracted token
         $this->client->request('POST', '/checkout/confirm', [
-            '_token' => $this->generateCsrfToken('checkout_confirm'),
+            '_token' => $token,
             'shipping_address_id' => $this->address->getId(),
             'billing_address_id' => $this->address->getId(),
         ]);
@@ -157,10 +162,11 @@ final class CheckoutControllerTest extends WebTestCase
         $this->assertEquals('199.99', $orderItem->getUnitPrice());
         $this->assertEquals('399.98', $orderItem->getTotalPrice());
 
-        // Verify cart was cleared
-        $this->manager->refresh($cart);
-        $this->assertCount(0, $cart->getItems());
-        $this->assertEquals('0.00', $cart->getTotalPrice());
+        // Verify cart was cleared - fetch fresh from DB
+        $cartFromDb = $this->manager->getRepository(\App\Entity\Cart::class)->findOneBy(['user' => $this->user]);
+        $this->assertNotNull($cartFromDb);
+        $this->assertCount(0, $cartFromDb->getItems());
+        $this->assertEquals('0.00', $cartFromDb->getTotalPrice());
     }
 
     // test checking address
@@ -182,9 +188,13 @@ final class CheckoutControllerTest extends WebTestCase
         ]);
         $this->manager->flush();
 
+        // Load checkout page and extract CSRF token
+        $crawler = $this->client->request('GET', '/checkout/');
+        $token = $crawler->filter('input[name="_csrf_token"]')->attr('value');
+
         // Submit checkout form with invalid billing address
         $this->client->request('POST', '/checkout/confirm', [
-            '_token' => $this->generateCsrfToken('checkout_confirm'),
+            '_token' => $token,
             'shipping_address_id' => $otherAddress->getId(),
             'billing_address_id' => $this->address->getId(),
         ]);
@@ -204,43 +214,63 @@ final class CheckoutControllerTest extends WebTestCase
             'unitPrice' => $this->product->getPrice(),
         ]);
 
-        // Deactivate product
+        // Load checkout page first (while product is still active)
+        $crawler = $this->client->request('GET', '/checkout/');
+        $token = $crawler->filter('input[name="_csrf_token"]')->attr('value');
+
+        // Now deactivate product (simulating product becoming unavailable between page load and submit)
         $this->product->setIsActive(false);
         $this->manager->flush();
 
-        // Submit checkout form
+        // Submit checkout form with the token we got earlier
         $this->client->request('POST', '/checkout/confirm', [
-            '_token' => $this->generateCsrfToken('checkout_confirm'),
+            '_token' => $token,
             'shipping_address_id' => $this->address->getId(),
             'billing_address_id' => $this->address->getId(),
         ]);
         $this->assertResponseRedirects('/checkout/');
     }
 
-    // test clearing cart after order
+    // test clearing cart after order (when stock is insufficient)
     public function testCartClearedAfterOrder(): void
     {
         $this->client->loginUser($this->user);
-        // Simulate non-empty cart
+        // Create cart with valid quantity first (so we can load checkout page)
         $cart = CartFactory::createOne(['user' => $this->user])->_real();
-        CartItemFactory::createOne([
+        $cartItem = CartItemFactory::createOne([
             'cart' => $cart,
             'product' => $this->product,
-            'quantity' => 15,
+            'quantity' => 5, // Valid quantity initially
             'unitPrice' => $this->product->getPrice(),
-        ]);
+        ])->_real();
+
+        // Load checkout page and extract CSRF token
+        $crawler = $this->client->request('GET', '/checkout/');
+        $token = $crawler->filter('input[name="_csrf_token"]')->attr('value');
+
+        // Now change quantity to exceed stock (simulating user manipulation or race condition)
+        $cartItem->setQuantity(15); // More than available stock (10)
+        $this->manager->flush();
 
         // Submit checkout form
         $this->client->request('POST', '/checkout/confirm', [
-            '_token' => $this->generateCsrfToken('checkout_confirm'),
+            '_token' => $token,
             'shipping_address_id' => $this->address->getId(),
             'billing_address_id' => $this->address->getId(),
         ]);
         $this->assertResponseRedirects('/checkout/');
-        // Follow redirect to load the flash message page
+
+        // Follow redirect - this will check for unavailable products and redirect to cart
+        $crawler = $this->client->followRedirect();
+
+        // The checkout page detects unavailable products and redirects to cart
+        $this->assertResponseRedirects('/cart/');
+
+        // Follow second redirect to cart page where error is shown
         $this->client->followRedirect();
-        // Verify cart is empty and an error flash is shown
-        $this->assertSelectorExists('.alert-error');
+
+        // Verify error flash is shown on cart page
+        $this->assertSelectorExists('.flash-error');
     }
 
     // test successful order confirmation page
@@ -248,47 +278,24 @@ final class CheckoutControllerTest extends WebTestCase
     {
         $this->client->loginUser($this->user);
 
-        $order = new Order();
-        $order->setUser($this->user);
-        $order->setShippingAddress($this->address);
-        $order->setBillingAddress($this->address);
-        $order->setTotalAmount('199.99');
-        $order->setStatus(OrderStatus::PENDING);
+        // Create order with item using factories for consistency
+        $order = OrderFactory::createOne([
+            'user' => $this->user,
+            'shippingAddress' => $this->address,
+            'billingAddress' => $this->address,
+            'totalAmount' => '199.99',
+            'status' => OrderStatus::PENDING,
+        ])->_real();
 
-        $orderItem = new OrderItem();
-        $orderItem->setParentOrder($order);
-        $orderItem->setProduct($this->product);
-        $orderItem->setQuantity(1);
-        $orderItem->setUnitPrice('199.99');
-        $orderItem->setTotalPrice('199.99');
-
-        $this->manager->persist($order);
-        $this->manager->persist($orderItem);
-        $this->manager->flush();
+        OrderItemFactory::createOne([
+            'parentOrder' => $order,
+            'product' => $this->product,
+            'quantity' => 1,
+            'unitPrice' => '199.99',
+            'totalPrice' => '199.99',
+        ]);
 
         $this->client->request('GET', '/checkout/success/' . $order->getOrderNumber());
         $this->assertResponseIsSuccessful();
-    }
-
-    private function generateCsrfToken(string $tokenId): string
-    {
-        $container = static::getContainer();
-
-        // Ensure RequestStack has a Request with a Session so CSRF token storage works
-        if ($container->has('request_stack')) {
-            $requestStack = $container->get('request_stack');
-            $current = $requestStack->getCurrentRequest();
-            $hasSession = $current && $current->hasSession();
-            if (!$hasSession) {
-                $session = new \Symfony\Component\HttpFoundation\Session\Session(new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage());
-                $session->start();
-                $request = new \Symfony\Component\HttpFoundation\Request();
-                $request->setSession($session);
-                $requestStack->push($request);
-            }
-        }
-
-        $csrfTokenManager = $container->get('security.csrf.token_manager');
-        return $csrfTokenManager->getToken($tokenId)->getValue();
     }
 }

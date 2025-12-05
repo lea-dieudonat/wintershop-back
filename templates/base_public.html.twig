@@ -43,18 +43,14 @@
         </header>
 
         <main>
-            {% for message in app.flashes('success') %}
-                <div class="container">
-                    <div class="alert alert-success">{{ message }}</div>
-                </div>
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="container">
+                        <div class="flash-{{ label }}">{{ message }}</div>
+                    </div>
+                {% endfor %}
             {% endfor %}
-            
-            {% for message in app.flashes('error') %}
-                <div class="container">
-                    <div class="alert alert-error">{{ message }}</div>
-                </div>
-            {% endfor %}
-            
+
             {% block body %}{% endblock %}
         </main>
 

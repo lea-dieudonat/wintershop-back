@@ -38,6 +38,7 @@ final class CartControllerTest extends WebTestCase
         $this->product = ProductFactory::createOne([
             'price' => 99.99,
             'stock' => 10,
+            'isActive' => true,
             'category' => $category,
         ])->_real();
 
@@ -272,12 +273,6 @@ final class CartControllerTest extends WebTestCase
         // Test that the cart displays the correct total price
         $this->client->loginUser($this->user);
 
-        // Create a cart and items directly using the EntityManager so they are
-        // managed by the same EM used by the controller.
-        $cart = new \App\Entity\Cart();
-        $cart->setUser($this->user);
-        $this->manager->persist($cart);
-
         $product2 = ProductFactory::createOne([
             'price' => 49.99,
             'stock' => 10,
@@ -285,19 +280,22 @@ final class CartControllerTest extends WebTestCase
             'category' => CategoryFactory::createOne(),
         ])->_real();
 
-        $cartItem1 = new \App\Entity\CartItem();
-        $cartItem1->setCart($cart);
-        $cartItem1->setProduct($this->product);
-        $cartItem1->setQuantity(2);
-        $cartItem1->setUnitPrice((string) $this->product->getPrice());
-        $this->manager->persist($cartItem1);
+        // Create cart with items using factories (same pattern as other tests)
+        $cart = CartFactory::createOne(['user' => $this->user])->_real();
 
-        $cartItem2 = new \App\Entity\CartItem();
-        $cartItem2->setCart($cart);
-        $cartItem2->setProduct($product2);
-        $cartItem2->setQuantity(1);
-        $cartItem2->setUnitPrice((string) $product2->getPrice());
-        $this->manager->persist($cartItem2);
+        CartItemFactory::createOne([
+            'cart' => $cart,
+            'product' => $this->product,
+            'quantity' => 2,
+            'unitPrice' => (string) $this->product->getPrice(),
+        ]);
+
+        CartItemFactory::createOne([
+            'cart' => $cart,
+            'product' => $product2,
+            'quantity' => 1,
+            'unitPrice' => (string) $product2->getPrice(),
+        ]);
 
         $this->manager->flush();
 
@@ -311,6 +309,6 @@ final class CartControllerTest extends WebTestCase
 
         // Check that the total price is displayed correctly
         // Template appends the euro symbol, so include it in the assertion
-        $this->assertSelectorTextContains('.cart-total', number_format($expectedTotal, 2) . ' €');
+        $this->assertSelectorTextContains('.cart-total', number_format($expectedTotal, 2, '.', '') . ' €');
     }
 }

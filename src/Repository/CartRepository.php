@@ -16,57 +16,43 @@ class CartRepository extends ServiceEntityRepository
         parent::__construct($registry, Cart::class);
     }
 
-    public function recalculateTotal(Cart $cart): string
+    /**
+     * Delete all cart items for a given cart using DQL
+     */
+    public function clearAllItems(Cart $cart): void
     {
-        $total = '0.00';
-        foreach ($cart->getItems() as $item) {
-            $unit = $item->getUnitPrice() ?? $item->getProduct()?->getPrice() ?? '0.00';
-            $line = bcmul((string) $unit, (string) $item->getQuantity(), 2);
-            $total = bcadd($total, $line, 2);
-        }
-
-        $cart->setTotalPrice($total);
-
-        return $total;
+        $this->getEntityManager()
+            ->createQuery('DELETE FROM App\\Entity\\CartItem ci WHERE ci.cart = :cart')
+            ->setParameter('cart', $cart)
+            ->execute();
     }
 
     /**
-     * Remove unavailable items from cart and return info about removed items
+     * Remove specific cart items from the database
      *
-     * @return array Array of unavailable items info
+     * @param array $items Array of CartItem entities to remove
      */
-    public function removeUnavailableItems(Cart $cart): array
+    public function removeItems(Cart $cart, array $items): void
     {
-        $unavailableItems = [];
-        $itemsToRemove = [];
+        $em = $this->getEntityManager();
+        foreach ($items as $item) {
+            $cart->removeItem($item);
+            $em->remove($item);
+        }
+        $em->flush();
+    }
 
-        foreach ($cart->getItems()->toArray() as $item) {
-            $product = $item->getProduct();
-
-            if (!$product || !$product->isActive() || $product->getStock() < $item->getQuantity()) {
-                $unavailableItems[] = [
-                    'name' => $product ? $product->getName() : 'Unknown',
-                    'reason' => !$product ? 'Product not found' : (!$product->isActive() ? 'Produit plus disponible' : 'Stock insuffisant'),
-                    'requestedQty' => $item->getQuantity(),
-                    'availableStock' => $product ? $product->getStock() : 0,
-                ];
-
-                $itemsToRemove[] = $item;
+    /**
+     * Find a cart item by product in the given cart
+     */
+    public function findItemByProduct(Cart $cart, $product)
+    {
+        foreach ($cart->getItems() as $item) {
+            if ($item->getProduct()->getId() === $product->getId()) {
+                return $item;
             }
         }
 
-        if (!empty($itemsToRemove)) {
-            $em = $this->getEntityManager();
-            foreach ($itemsToRemove as $item) {
-                $cart->removeItem($item);
-                $em->remove($item);
-            }
-
-            $this->recalculateTotal($cart);
-            $cart->setUpdatedAt(new \DateTimeImmutable());
-            $em->flush();
-        }
-
-        return $unavailableItems;
+        return null;
     }
 }

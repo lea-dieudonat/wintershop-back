@@ -67,9 +67,25 @@
                 {% endif %}
 
                 {% if product.stock > 0 %}
-                    <button class="btn" style="width: 100%; font-size: 1.2rem; cursor: pointer; border: none;">
-                        🛒 Ajouter au panier
-                    </button>
+                    <form method="post" action="{{ path(r('CART_ADD').value, {id: product.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('add-to-cart' ~ product.id) }}">
+                        <div style="margin-bottom: 1.5rem;">
+                            <label for="quantity" style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">
+                                Quantité:
+                            </label>
+                            <input type="number" 
+                                    id="quantity" 
+                                    name="quantity" 
+                                    value="1" 
+                                    min="1" 
+                                    max="{{ product.stock }}" 
+                                    style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem;"
+                                    required>
+                        </div>
+                        <button class="btn" style="width: 100%; font-size: 1.2rem; background: #667eea; color: white; border: none; padding: 1rem; border-radius: 5px; cursor: pointer;">
+                            Ajouter au panier
+                        </button>
+                    </form>
                 {% else %}
                     <button class="btn" style="width: 100%; font-size: 1.2rem; background: #ccc; cursor: not-allowed; border: none;" disabled>
                         Indisponible

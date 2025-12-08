@@ -5,33 +5,27 @@ namespace App\Controller;
 use App\Constant\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\CartItem;
-use App\Repository\CartRepository;
-use App\Repository\ProductRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\CartService;
 use Symfony\Component\Routing\Annotation\Route as RouteAttribute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Entity\Cart;
 use App\Entity\Product;
-use App\Entity\User;
 
 #[RouteAttribute('/cart')]
 class CartController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private CartRepository $cartRepository,
-        private ProductRepository $productRepository,
+        private CartService $cartService,
     ) {}
 
     #[RouteAttribute('/', name: Route::CART->value, methods: ['GET'])]
     public function index(): Response
     {
-        $cart = $this->getOrCreateCart();
+        $cart = $this->cartService->getOrCreateCart();
 
-        $this->cartRepository->recalculateTotal($cart);
+        $this->cartService->calculateTotal($cart);
 
-        $unavailableItems = $this->cartRepository->removeUnavailableItems($cart);
+        $unavailableItems = $this->cartService->removeUnavailableItems($cart);
 
         if (count($unavailableItems) > 0) {
             $this->addFlash('warning', sprintf(
@@ -49,108 +43,52 @@ class CartController extends AbstractController
     #[RouteAttribute('/add/{id}', name: Route::CART_ADD->value, methods: ['POST'])]
     public function add(Request $request, Product $product): Response
     {
-        // read quantity from POST body if provided (default to 1)
+        $submittedToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('add-to-cart' . $product->getId(), $submittedToken)) {
+            $this->addFlash('error', 'Invalid CSRF token.');
+            return $this->redirectToRoute(Route::SHOP_PRODUCT->value, ['slug' => $product->getSlug()]);
+        }
+
         $quantity = (int) $request->request->get('quantity', 1);
+        $cart = $this->cartService->getOrCreateCart();
 
-        if ($quantity < 1) {
-            $this->addFlash('error', 'Quantity must be at least 1.');
+        try {
+            $this->cartService->addProduct($cart, $product, $quantity);
+            $this->addFlash('success', 'Product added to cart successfully.');
+            // Redirection vers la page d'où vient l'utilisateur
+            $referer = $request->headers->get('referer');
+            if ($referer) {
+                return $this->redirect($referer);
+            }
+            return $this->redirectToRoute(Route::CART->value);
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute(Route::SHOP_PRODUCT->value, ['slug' => $product->getSlug()]);
         }
-
-        if ($product->getStock() < $quantity) {
-            $this->addFlash('error', 'Not enough stock available.');
-            return $this->redirectToRoute(Route::SHOP_PRODUCT->value, ['slug' => $product->getSlug()]);
-        }
-
-        $cart = $this->getOrCreateCart();
-
-        // Check if the product is already in the cart
-        $cartItem = null;
-        foreach ($cart->getItems() as $item) {
-            if ($item->getProduct()->getId() === $product->getId()) {
-                $cartItem = $item;
-                break;
-            }
-        }
-
-        if ($cartItem) {
-            // Update quantity if item already in cart
-            $newQuantity = $cartItem->getQuantity() + $quantity;
-            if ($product->getStock() < $newQuantity) {
-                $this->addFlash('error', 'Not enough stock available to add that quantity.');
-                return $this->redirectToRoute(Route::SHOP_PRODUCT->value, ['slug' => $product->getSlug()]);
-            }
-            $cartItem->setQuantity($newQuantity);
-        } else {
-            // Create new cart item
-            $cartItem = new CartItem();
-            $cartItem->setProduct($product);
-            $cartItem->setQuantity($quantity);
-            // Store the unit price at time of adding to cart to avoid null DB value
-            $cartItem->setUnitPrice((string) $product->getPrice());
-            $cart->addItem($cartItem);
-            $this->entityManager->persist($cartItem);
-        }
-        $cart->setUpdatedAt(new \DateTimeImmutable());
-
-        $this->cartRepository->recalculateTotal($cart);
-
-        $this->entityManager->flush();
-        $this->addFlash('success', 'Product added to cart successfully.');
-        return $this->redirectToRoute(Route::CART->value);
     }
 
     #[RouteAttribute('/update/{id}', name: Route::CART_UPDATE->value, methods: ['POST'])]
     public function update(Request $request, CartItem $cartItem): Response
     {
-        // Ensure the cart item belongs to the current user's cart
-        $cart = $this->getOrCreateCart();
-        if ($cartItem->getCart()->getId() !== $cart->getId()) {
-            throw $this->createAccessDeniedException('You do not have permission to modify this cart item.');
-        }
-
-        // read quantity from POST body if provided (default to 1)
         $quantity = (int) $request->request->get('quantity', 1);
+        $cart = $this->cartService->getOrCreateCart();
 
-        if ($quantity < 1) {
-            $this->addFlash('error', 'Quantity must be at least 1.');
+        try {
+            $this->cartService->updateQuantity($cart, $cartItem, $quantity);
+            $this->addFlash('success', 'Cart updated successfully.');
+            return $this->redirectToRoute(Route::CART->value);
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute(Route::CART->value);
         }
-
-        if ($cartItem->getProduct()->getStock() < $quantity) {
-            $this->addFlash('error', 'Not enough stock available.');
-            return $this->redirectToRoute(Route::CART->value);
-        }
-
-        $cartItem->setQuantity($quantity);
-        $cart->setUpdatedAt(new \DateTimeImmutable());
-
-        $this->cartRepository->recalculateTotal($cart);
-
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Cart updated successfully.');
-        return $this->redirectToRoute(Route::CART->value);
     }
 
     #[RouteAttribute('/remove/{id}', name: Route::CART_REMOVE->value, methods: ['POST'])]
     public function remove(CartItem $cartItem): Response
     {
-        // Ensure the cart item belongs to the current user's cart
-        $cart = $this->getOrCreateCart();
-        if ($cartItem->getCart()->getId() !== $cart->getId()) {
-            throw $this->createAccessDeniedException('You do not have permission to modify this cart item.');
-        }
+        $cart = $this->cartService->getOrCreateCart();
 
-        $cart->removeItem($cartItem);
-        $cart->setUpdatedAt(new \DateTimeImmutable());
-
-        $this->entityManager->remove($cartItem);
-
-        $this->cartRepository->recalculateTotal($cart);
-
-        $this->entityManager->flush();
-
+        $this->cartService->removeProduct($cart, $cartItem);
         $this->addFlash('success', 'Item removed from cart successfully.');
         return $this->redirectToRoute(Route::CART->value);
     }
@@ -158,52 +96,11 @@ class CartController extends AbstractController
     #[RouteAttribute('/clear', name: Route::CART_CLEAR->value, methods: ['POST'])]
     public function clear(): Response
     {
-        $cart = $this->getOrCreateCart();
+        $cart = $this->cartService->getOrCreateCart();
 
-        // Use a direct DQL delete to ensure items are removed in the DB even if
-        // they were persisted/managed by a different EM instance used in tests.
-        $this->entityManager->createQuery('DELETE FROM App\\Entity\\CartItem ci WHERE ci.cart = :cart')
-            ->setParameter('cart', $cart)
-            ->execute();
-
-        // Clear the collection in the owning Cart entity and update totals
-        $cart->getItems()->clear();
-        $cart->setUpdatedAt(new \DateTimeImmutable());
-        $cart->setTotalPrice('0.00');
-
-        $this->entityManager->flush();
+        $this->cartService->clearCart($cart);
 
         $this->addFlash('success', 'Cart cleared successfully.');
         return $this->redirectToRoute(Route::CART->value);
-    }
-
-    // Helper method to get or create a cart for the current user/session
-    public function getOrCreateCart(): Cart
-    {
-        $user = $this->getUser();
-
-        if (!$user) {
-            throw $this->createAccessDeniedException('You must be logged in to access the cart.');
-        }
-
-        // Ensure we use an entity instance managed by this controller's EntityManager
-        /** @var User $user */
-        $user = $user;
-        $userId = $user->getId();
-        $managedUser = $this->entityManager->getRepository(User::class)->find($userId);
-
-        if (!$managedUser) {
-            throw $this->createAccessDeniedException('User not found.');
-        }
-
-        $cart = $this->cartRepository->findOneBy(['user' => $managedUser]);
-        if (!$cart) {
-            $cart = new Cart();
-            $cart->setUser($managedUser);
-            $this->entityManager->persist($cart);
-            $this->entityManager->flush();
-        }
-
-        return $cart;
     }
 }

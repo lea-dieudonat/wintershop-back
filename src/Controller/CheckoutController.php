@@ -6,7 +6,7 @@ use App\Constant\Route;
 use App\Entity\Cart;
 use App\Entity\User;
 use App\Entity\Address;
-use App\Repository\CartRepository;
+use App\Service\CartService;
 use App\Service\CheckoutService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +22,7 @@ class CheckoutController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CheckoutService $checkoutService,
-        private CartRepository $cartRepository
+        private CartService $cartService
     ) {}
 
     #[RouteAttribute('/', name: Route::CHECKOUT->value)]
@@ -30,14 +30,17 @@ class CheckoutController extends AbstractController
     {
         $cart = $this->getCart();
 
-        $this->cartRepository->recalculateTotal($cart);
-
+        // Check if cart is empty before checking products
         if ($cart->getItems()->isEmpty()) {
             $this->addFlash('warning', 'Your cart is empty. Add some products before checkout.');
             return $this->redirectToRoute(Route::SHOP->value);
         }
 
-        if ($this->checkoutService->hasUnavailableProducts($cart)) {
+        $this->cartService->calculateTotal($cart);
+
+        // Check for unavailable items - if any are removed, redirect to cart
+        $unavailableItems = $this->cartService->removeUnavailableItems($cart);
+        if (!empty($unavailableItems)) {
             $this->addFlash('error', 'Certains produits de votre panier ne sont plus disponibles. Veuillez vérifier votre panier.');
             return $this->redirectToRoute(Route::CART->value);
         }
@@ -101,7 +104,7 @@ class CheckoutController extends AbstractController
             );
 
             // Clear the cart
-            $this->checkoutService->clearCart($cart);
+            $this->cartService->clearCart($cart);
 
             $this->addFlash('success', sprintf(
                 'Order %s created successfully! You will receive a confirmation email.',

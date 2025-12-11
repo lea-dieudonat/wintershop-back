@@ -7,28 +7,64 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ],
+    normalizationContext: ['groups' => ['category:read']],
+    denormalizationContext: ['groups' => ['category:write']],
+    paginationEnabled: true,
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: [
+        'name' => 'partial',
+        'slug' => 'exact',
+    ]
+)]
+#[ApiFilter(OrderFilter::class, properties: ['name', 'id'])]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category:read', 'product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read', 'product:read', 'category:write'])]
     private string $name;
 
     /**
-    * Identifiant URL-friendly de la catégorie.
-    * Généré automatiquement à partir du nom (ex: "vêtements-homme").
-    * Utilisé pour les URLs SEO-friendly.
-    */
+     * Identifiant URL-friendly de la catégorie.
+     * Généré automatiquement à partir du nom (ex: "vêtements-homme").
+     * Utilisé pour les URLs SEO-friendly.
+     */
     #[ORM\Column(length: 100, unique: true, options: ['comment' => 'URL slug unique'])]
+    #[Groups(['category:read', 'product:read', 'category:write'])]
     private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['category:read', 'product:read', 'category:write'])]
     private ?string $description = null;
 
     #[ORM\Column]

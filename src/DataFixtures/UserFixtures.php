@@ -15,8 +15,23 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Create an admin user
-        $this->createUser($manager, 'admin@example.com', 'Admin', 'User', ['ROLE_ADMIN'], 'adminpassword', 'user_admin');
+        // Create admin users (data-driven)
+        $adminUsers = [
+            ['email' => 'admin@example.com', 'firstName' => 'Admin', 'lastName' => 'User'],
+            ['email' => 'admin@wintershop.com', 'firstName' => 'Super', 'lastName' => 'Admin'],
+        ];
+
+        foreach ($adminUsers as $idx => $data) {
+            $this->createUser(
+                $manager,
+                $data['email'],
+                $data['firstName'],
+                $data['lastName'],
+                ['ROLE_ADMIN'],
+                'adminpassword',
+                'user_admin_' . ($idx + 1)
+            );
+        }
 
         // Create multiple regular users (data-driven)
         $regularUsers = [

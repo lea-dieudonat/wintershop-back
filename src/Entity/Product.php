@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,41 +10,83 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')"),
+    ],
+    normalizationContext: ['groups' => ['product:read']],
+    denormalizationContext: ['groups' => ['product:write']],
+    paginationEnabled: true,
+    paginationItemsPerPage: 10,
+)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'name' => 'partial',
+    'description' => 'partial',
+    'category' => 'exact',
+    'category.slug' => 'exact',
+])]
+#[ApiFilter(RangeFilter::class, properties: ['price', 'stock'])]
+#[ApiFilter(OrderFilter::class, properties: [
+    'price',
+    'name',
+    'stock',
+    'id'
+], arguments: ['orderParameterName' => 'order'])]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['product:read', 'product:write'])]
     private string $name;
 
     /**
-    * Identifiant URL-friendly du produit.
-    * Format: {nom-produit}-{id} pour garantir l'unicité.
-    * Exemple: "t-shirt-coton-bio-123"
-    */
+     * Identifiant URL-friendly du produit.
+     * Format: {nom-produit}-{id} pour garantir l'unicité.
+     * Exemple: "t-shirt-coton-bio-123"
+     */
     #[ORM\Column(length: 255, unique: true, options: ['comment' => 'Slug unique du produit'])]
+    #[Groups(['product:read', 'product:write'])]
     private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $description = null;
 
     /**
-    * Prix unitaire du produit en euros.
-    * Stocké en decimal pour éviter les erreurs d'arrondi.
-    * Utilisez toujours le type string en PHP pour les calculs financiers.
-    * 
-    * @var string Prix en format decimal (ex: "19.99")
-    */
+     * Prix unitaire du produit en euros.
+     * Stocké en decimal pour éviter les erreurs d'arrondi.
+     * Utilisez toujours le type string en PHP pour les calculs financiers.
+     * 
+     * @var string Prix en format decimal (ex: "19.99")
+     */
     #[ORM\Column(
-        type: Types::DECIMAL, 
-        precision: 10, 
+        type: Types::DECIMAL,
+        precision: 10,
         scale: 2,
         options: ['comment' => 'Prix en EUR (decimal 10,2)']
     )]
@@ -53,13 +96,14 @@ class Product
         pattern: '/^\d+(\.\d{1,2})?$/',
         message: 'Le prix doit être au format décimal avec maximum deux chiffres après la virgule'
     )]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $price = null;
 
     /**
-    * Quantité disponible en stock.
-    * Doit être mis à jour à chaque commande validée.
-    * Une valeur de 0 signifie "rupture de stock".
-    */
+     * Quantité disponible en stock.
+     * Doit être mis à jour à chaque commande validée.
+     * Une valeur de 0 signifie "rupture de stock".
+     */
     #[ORM\Column(options: ['default' => 0, 'comment' => 'Quantité en stock'])]
     #[Assert\NotBlank(message: 'Le stock est obligatoire')]
     #[Assert\PositiveOrZero(message: 'Le stock ne peut pas être négatif')]
@@ -67,17 +111,20 @@ class Product
         type: 'integer',
         message: 'Le stock doit être un nombre entier'
     )]
+    #[Groups(['product:read', 'product:write'])]
     private int $stock = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['product:read', 'product:write'])]
     private ?string $imageUrl = null;
 
     /**
-    * Indique si le produit est visible sur le site.
-    * Permet de désactiver un produit sans le supprimer.
-    * Les produits inactifs n'apparaissent pas dans le catalogue.
-    */
+     * Indique si le produit est visible sur le site.
+     * Permet de désactiver un produit sans le supprimer.
+     * Les produits inactifs n'apparaissent pas dans le catalogue.
+     */
     #[ORM\Column(options: ['default' => true, 'comment' => 'Produit visible sur le site'])]
+    #[Groups(['product:read', 'product:write'])]
     private bool $isActive = true;
 
     #[ORM\Column]
@@ -88,6 +135,7 @@ class Product
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['product:read', 'product:write'])]
     private ?Category $category = null;
 
     /**

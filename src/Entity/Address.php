@@ -2,14 +2,39 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AddressRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\Dto\AddressInputDto;
+use App\Dto\AddressOutputDto;
+use App\State\AddressProvider;
+use App\State\AddressProcessor;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(),
+    ],
+    input: AddressInputDto::class,
+    output: AddressOutputDto::class,
+    provider: AddressProvider::class,
+    processor: AddressProcessor::class,
+    security: "is_granted('ROLE_USER')"
+)]
+#[ORM\HasLifecycleCallbacks]
 class Address
 {
     #[ORM\Id]
@@ -37,10 +62,10 @@ class Address
     private ?string $additionalInfo = null;
 
     /**
-    * Indique si c'est l'adresse par défaut de l'utilisateur.
-    * Un utilisateur ne peut avoir qu'UNE SEULE adresse par défaut.
-    * Utilisée automatiquement lors du checkout.
-    */
+     * Indique si c'est l'adresse par défaut de l'utilisateur.
+     * Un utilisateur ne peut avoir qu'UNE SEULE adresse par défaut.
+     * Utilisée automatiquement lors du checkout.
+     */
     #[ORM\Column(options: ["default" => false, 'comment' => 'Adresse par défaut'])]
     private bool $isDefault = false;
 
@@ -69,6 +94,19 @@ class Address
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

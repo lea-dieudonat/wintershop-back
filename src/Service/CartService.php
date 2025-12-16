@@ -3,16 +3,15 @@
 namespace App\Service;
 
 use App\Entity\Cart;
-use App\Entity\CartItem;
-use App\Entity\Product;
 use App\Entity\User;
+use DateTimeImmutable;
+use App\Entity\Product;
+use App\Entity\CartItem;
+use InvalidArgumentException;
 use App\Repository\CartRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use InvalidArgumentException;
-use RuntimeException;
-use DateTimeImmutable;
 
 class CartService
 {
@@ -27,7 +26,7 @@ class CartService
      *
      * @throws InvalidArgumentException If quantity is invalid or stock is insufficient
      */
-    public function addProduct(Cart $cart, Product $product, int $quantity): void
+    public function addProduct(Cart $cart, Product $product, int $quantity): Cart
     {
         if ($quantity < 1) {
             throw new InvalidArgumentException('Quantity must be at least 1.');
@@ -58,6 +57,8 @@ class CartService
 
         $this->calculateTotal($cart);
         $this->entityManager->flush();
+
+        return $cart;
     }
 
     /**
@@ -66,7 +67,7 @@ class CartService
      * @throws InvalidArgumentException If quantity is invalid or stock is insufficient
      * @throws AccessDeniedException If cart item doesn't belong to the cart
      */
-    public function updateQuantity(Cart $cart, CartItem $cartItem, int $quantity): void
+    public function updateQuantity(Cart $cart, CartItem $cartItem, int $quantity): Cart
     {
         if ($cartItem->getCart()->getId() !== $cart->getId()) {
             throw new AccessDeniedException('You do not have permission to modify this cart item.');
@@ -83,6 +84,8 @@ class CartService
         $cartItem->setQuantity($quantity);
         $this->calculateTotal($cart);
         $this->entityManager->flush();
+
+        return $cart;
     }
 
     /**
@@ -90,7 +93,7 @@ class CartService
      *
      * @throws AccessDeniedException If cart item doesn't belong to the cart
      */
-    public function removeProduct(Cart $cart, CartItem $cartItem): void
+    public function removeProduct(Cart $cart, CartItem $cartItem): Cart
     {
         if ($cartItem->getCart()->getId() !== $cart->getId()) {
             throw new AccessDeniedException('You do not have permission to modify this cart item.');
@@ -100,6 +103,8 @@ class CartService
         $this->entityManager->remove($cartItem);
         $this->calculateTotal($cart);
         $this->entityManager->flush();
+
+        return $cart;
     }
 
     /**

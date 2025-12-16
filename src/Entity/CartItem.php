@@ -2,11 +2,41 @@
 
 namespace App\Entity;
 
-use App\Repository\CartItemRepository;
+use App\Dto\CartOutputDto;
+use App\Dto\CartItemInputDto;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\State\CartItemProcessor;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\CartItemRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartItemRepository::class)]
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/cart/items',
+            output: CartOutputDto::class,
+            security: "is_granted('ROLE_USER')",
+        ),
+        new Patch(
+            uriTemplate: '/cart/items/{id}',
+            output: CartOutputDto::class,
+            security: "is_granted('ROLE_USER')",
+            inputFormats: ['json' => ['application/json']],
+        ),
+        new Delete(
+            uriTemplate: '/cart/items/{id}',
+            output: CartOutputDto::class,
+            security: "is_granted('ROLE_USER')",
+        ),
+    ],
+    input: CartItemInputDto::class,
+    processor: CartItemProcessor::class,
+)]
+#[ORM\HasLifecycleCallbacks]
 class CartItem
 {
     #[ORM\Id]
@@ -15,10 +45,10 @@ class CartItem
     private ?int $id = null;
 
     /**
-    * Quantité du produit dans le panier.
-    * Minimum: 1 (sinon l'item doit être supprimé).
-    * Maximum: limité par le stock disponible.
-    */
+     * Quantité du produit dans le panier.
+     * Minimum: 1 (sinon l'item doit être supprimé).
+     * Maximum: limité par le stock disponible.
+     */
     #[ORM\Column(options: ['default' => 1, 'comment' => 'Quantité (min: 1)'])]
     #[Assert\NotBlank]
     #[Assert\Positive(message: 'La quantité doit être au moins de 1.')]

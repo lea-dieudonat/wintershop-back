@@ -2,13 +2,29 @@
 
 namespace App\Entity;
 
-use App\Repository\CartRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use App\Dto\CartOutputDto;
+use App\State\CartProvider;
+use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CartRepository;
+use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/cart',
+            security: "is_granted('ROLE_USER')",
+        ),
+    ],
+    output: CartOutputDto::class,
+    provider: CartProvider::class,
+)]
+#[ORM\HasLifecycleCallbacks]
 class Cart
 {
     #[ORM\Id]
@@ -54,6 +70,19 @@ class Cart
     {
         $this->items = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

@@ -2,10 +2,10 @@
 
 namespace App\State;
 
-use App\Dto\CartOutputDto;
 use App\Service\CartService;
-use App\Dto\CartItemInputDto;
 use InvalidArgumentException;
+use App\Dto\Cart\CartOutputDto;
+use App\Dto\Cart\CartItemInputDto;
 use ApiPlatform\Metadata\Operation;
 use App\Repository\ProductRepository;
 use App\Repository\CartItemRepository;

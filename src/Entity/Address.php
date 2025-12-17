@@ -13,8 +13,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
-use App\Dto\AddressInputDto;
-use App\Dto\AddressOutputDto;
+use App\Dto\Address\AddressInputDto;
+use App\Dto\Address\AddressOutputDto;
 use App\State\AddressProvider;
 use App\State\AddressProcessor;
 

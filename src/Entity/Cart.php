@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Dto\CartOutputDto;
 use App\State\CartProvider;
 use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
+use App\Dto\Cart\CartOutputDto;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CartRepository;
 use ApiPlatform\Metadata\ApiResource;

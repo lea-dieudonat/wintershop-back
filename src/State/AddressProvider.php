@@ -7,7 +7,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\AddressRepository;
 use App\Entity\Address;
-use App\Dto\AddressOutputDto;
+use App\Dto\Address\AddressOutputDto;
 
 class AddressProvider implements ProviderInterface
 {
@@ -48,28 +48,31 @@ class AddressProvider implements ProviderInterface
 
     public function transformToDto(Address $address): AddressOutputDto
     {
-        $dto = new AddressOutputDto();
-        $dto->id = $address->getId();
-        $dto->firstName = $address->getFirstName();
-        $dto->lastName = $address->getLastName();
-        $dto->street = $address->getStreet();
-        $dto->postalCode = $address->getPostalCode();
-        $dto->city = $address->getCity();
-        $dto->country = $address->getCountry();
-        $dto->additionalInfo = $address->getAdditionalInfo();
-        $dto->phoneNumber = $address->getPhoneNumber();
-        $dto->isDefault = $address->isDefault();
-        $dto->createdAt = $address->getCreatedAt();
-        $dto->updatedAt = $address->getUpdatedAt();
-
-        $dto->fullAddress = sprintf(
-            "%s, %s %s, %s",
-            $address->getPostalCode(),
-            $address->getCity(),
-            $address->getCountry(),
-            $address->getPhoneNumber() ?? ''
+        $fullAddress = implode(
+            ', ',
+            array_filter([
+                $address->getStreet(),
+                $address->getAdditionalInfo(),
+                trim(sprintf('%s %s', $address->getPostalCode(), $address->getCity())),
+                $address->getCountry(),
+                $address->getPhoneNumber(),
+            ])
         );
 
-        return $dto;
+        return new AddressOutputDto(
+            id: $address->getId(),
+            firstName: $address->getFirstName(),
+            lastName: $address->getLastName(),
+            street: $address->getStreet(),
+            postalCode: $address->getPostalCode(),
+            city: $address->getCity(),
+            country: $address->getCountry(),
+            additionalInfo: $address->getAdditionalInfo(),
+            phoneNumber: $address->getPhoneNumber(),
+            isDefault: $address->isDefault() ?? false,
+            fullAddress: $fullAddress,
+            createdAt: $address->getCreatedAt(),
+            updatedAt: $address->getUpdatedAt(),
+        );
     }
 }

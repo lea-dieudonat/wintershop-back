@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Dto\CartOutputDto;
-use App\Dto\CartItemInputDto;
+use App\Dto\Cart\CartOutputDto;
+use App\Dto\Cart\CartItemInputDto;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;

@@ -24,10 +24,10 @@ class Order
     private ?int $id = null;
 
     /**
-    * Numéro unique de commande généré automatiquement.
-    * Format: ORD-YYYYMMDD-XXXXX (ex: ORD-20241125-00042).
-    * Affiché au client et utilisé pour le support.
-    */
+     * Numéro unique de commande généré automatiquement.
+     * Format: ORD-YYYYMMDD-XXXXX (ex: ORD-20241125-00042).
+     * Affiché au client et utilisé pour le support.
+     */
     #[ORM\Column(length: 50, unique: true, options: ['comment' => 'Numéro unique de commande'])]
     private ?string $orderNumber = null;
 
@@ -45,25 +45,25 @@ class Order
     private OrderStatus $status = OrderStatus::PENDING;
 
     /**
-    * Montant total de la commande TTC.
-    * Calculé automatiquement : somme des OrderItem.totalPrice.
-    * Figé au moment de la validation (historisation).
-    * 
-    * @var string Montant en decimal (ex: "149.99")
-    */
+     * Montant total de la commande TTC.
+     * Calculé automatiquement : somme des OrderItem.totalPrice.
+     * Figé au moment de la validation (historisation).
+     * 
+     * @var string Montant en decimal (ex: "149.99")
+     */
     #[ORM\Column(
-        type: Types::DECIMAL, 
-        precision: 10, 
-        scale: 2, 
+        type: Types::DECIMAL,
+        precision: 10,
+        scale: 2,
         options: ['comment' => 'Montant total TTC en EUR']
     )]
-    private string $totalAmount;
+    private string $totalAmount = '0.00';
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
     #[ORM\JoinColumn(nullable: false)]
@@ -81,8 +81,8 @@ class Order
      * @var Collection<int, OrderItem>
      */
     #[ORM\OneToMany(
-        targetEntity: OrderItem::class, 
-        mappedBy: 'parentOrder', 
+        targetEntity: OrderItem::class,
+        mappedBy: 'parentOrder',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
@@ -91,7 +91,7 @@ class Order
     public function __construct()
     {
         $this->items = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -123,7 +123,7 @@ class Order
         return $this;
     }
 
-        public function markAsPaid(): self
+    public function markAsPaid(): self
     {
         return $this->setStatus(OrderStatus::PAID);
     }

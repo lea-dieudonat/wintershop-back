@@ -4,11 +4,11 @@ namespace App\State;
 
 use App\Entity\Cart;
 use App\Entity\CartItem;
-use App\Dto\CartOutputDto;
-use App\Dto\ProductOutputDto;
-use App\Dto\CartItemOutputDto;
+use App\Dto\Cart\CartOutputDto;
 use App\Repository\CartRepository;
 use ApiPlatform\Metadata\Operation;
+use App\Dto\Cart\CartItemOutputDto;
+use App\Dto\Product\ProductOutputDto;
 use ApiPlatform\State\ProviderInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -34,54 +34,56 @@ class CartProvider implements ProviderInterface
 
     public function transformToDto(Cart $cart): CartOutputDto
     {
-        $dto = new CartOutputDto();
-        $dto->id = $cart->getId();
-        $dto->createdAt = $cart->getCreatedAt();
-        $dto->updatedAt = $cart->getUpdatedAt();
-
-        $dto->items = array_map(
+        $items = array_map(
             fn(CartItem $item) => $this->transformCartItemToDto($item),
             $cart->getItems()->toArray()
         );
 
-        $dto->totalItems = array_reduce(
-            $dto->items,
+        $totalItems = array_reduce(
+            $items,
             fn(int $sum, CartItemOutputDto $item) => $sum + $item->quantity,
             0
         );
 
-        $dto->subtotal = array_reduce(
-            $dto->items,
+        $subtotal = array_reduce(
+            $items,
             fn(string $sum, CartItemOutputDto $item) => bcadd($sum, $item->totalPrice, 2),
             '0.00'
         );
 
-        return $dto;
+        return new CartOutputDto(
+            id: $cart->getId(),
+            items: $items,
+            totalItems: $totalItems,
+            subtotal: $subtotal,
+            createdAt: $cart->getCreatedAt(),
+            updatedAt: $cart->getUpdatedAt(),
+        );
     }
 
     private function transformCartItemToDto(CartItem $cartItem): CartItemOutputDto
     {
-        $dto = new CartItemOutputDto();
-        $dto->id = $cartItem->getId();
-        $dto->quantity = $cartItem->getQuantity();
-        $dto->unitPrice = $cartItem->getUnitPrice();
-        $dto->totalPrice = bcmul(
-            $dto->unitPrice,
-            (string)$dto->quantity,
-            2
+        $quantity = $cartItem->getQuantity();
+        $unitPrice = $cartItem->getUnitPrice();
+        $totalPrice = bcmul($unitPrice, (string)$quantity, 2);
+
+        return new CartItemOutputDto(
+            id: $cartItem->getId(),
+            product: $this->transformProductToDto($cartItem->getProduct()),
+            quantity: $quantity,
+            unitPrice: $unitPrice,
+            totalPrice: $totalPrice,
         );
-        $dto->product = $this->transformProductToDto($cartItem->getProduct());
-        return $dto;
     }
 
     private function transformProductToDto($product): ProductOutputDto
     {
-        $dto = new ProductOutputDto();
-        $dto->id = $product->getId();
-        $dto->name = $product->getName();
-        $dto->price = $product->getPrice();
-        $dto->image = $product->getImageUrl();
-        $dto->stock = $product->getStock();
-        return $dto;
+        return new ProductOutputDto(
+            id: $product->getId(),
+            name: $product->getName(),
+            price: $product->getPrice(),
+            stock: $product->getStock(),
+            image: $product->getImageUrl(),
+        );
     }
 }

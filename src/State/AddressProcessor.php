@@ -2,17 +2,17 @@
 
 namespace App\State;
 
-use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProcessorInterface;
-use App\Dto\AddressInputDto;
-use App\Dto\AddressOutputDto;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Bundle\SecurityBundle\Security;
-use App\Repository\AddressRepository;
-use App\Entity\Address;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
+use App\Entity\Address;
 use App\State\AddressProvider;
+use ApiPlatform\Metadata\Operation;
+use App\Dto\Address\AddressInputDto;
+use App\Dto\Address\AddressOutputDto;
+use App\Repository\AddressRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use ApiPlatform\State\ProcessorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AddressProcessor implements ProcessorInterface
 {

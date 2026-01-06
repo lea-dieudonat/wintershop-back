@@ -4,7 +4,7 @@ namespace App\Dto\Order;
 
 use DateTimeImmutable;
 
-readonly class OrderOutputDto
+final readonly class OrderOutputDto
 {
     public function __construct(
         public int $id,
@@ -12,6 +12,18 @@ readonly class OrderOutputDto
         public string $status,
         public string $totalAmount,
         public DateTimeImmutable $createdAt,
-        public int $itemsCount,
+        public int $itemCount,
     ) {}
+
+    public static function fromEntity($order): self
+    {
+        return new self(
+            id: $order->getId(),
+            orderNumber: $order->getOrderNumber(),
+            status: $order->getStatus()->value,
+            totalAmount: $order->getTotalAmount(),
+            createdAt: $order->getCreatedAt(),
+            itemCount: $order->getItems()->count(),
+        );
+    }
 }

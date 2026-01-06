@@ -21,4 +21,23 @@ readonly class AddressOutputDto
         public ?string $phoneNumber = null,
         public ?DateTimeImmutable $updatedAt = null,
     ) {}
+
+    public static function fromEntity($address): self
+    {
+        return new self(
+            id: $address->getId(),
+            firstName: $address->getFirstName(),
+            lastName: $address->getLastName(),
+            street: $address->getStreet(),
+            postalCode: $address->getPostalCode(),
+            city: $address->getCity(),
+            country: $address->getCountry(),
+            isDefault: $address->isDefault(),
+            fullAddress: $address->getFullAddress(),
+            createdAt: $address->getCreatedAt(),
+            additionalInfo: $address->getAdditionalInfo(),
+            phoneNumber: $address->getPhoneNumber(),
+            updatedAt: $address->getUpdatedAt(),
+        );
+    }
 }

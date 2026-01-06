@@ -9,7 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -57,16 +56,22 @@ class OrderCrudController extends AbstractCrudController
             ->setChoices([
                 'Pending' => OrderStatus::PENDING->value,
                 'Paid' => OrderStatus::PAID->value,
+                'Processing' => OrderStatus::PROCESSING->value,
                 'Shipped' => OrderStatus::SHIPPED->value,
                 'Delivered' => OrderStatus::DELIVERED->value,
                 'Cancelled' => OrderStatus::CANCELLED->value,
+                'Refund Requested' => OrderStatus::REFUND_REQUESTED->value,
+                'Refunded' => OrderStatus::REFUNDED->value,
             ])
             ->renderAsBadges([
                 OrderStatus::PENDING->value => 'warning',
                 OrderStatus::PAID->value => 'success',
+                OrderStatus::PROCESSING->value => 'primary',
                 OrderStatus::SHIPPED->value => 'primary',
                 OrderStatus::DELIVERED->value => 'success',
                 OrderStatus::CANCELLED->value => 'danger',
+                OrderStatus::REFUND_REQUESTED->value => 'warning',
+                OrderStatus::REFUNDED->value => 'danger',
             ]);
         yield MoneyField::new('totalAmount', 'Total Amount')
             ->setCurrency('EUR')
@@ -81,6 +86,11 @@ class OrderCrudController extends AbstractCrudController
             ->onlyOnDetail();
         yield DateTimeField::new('createdAt', 'Created At')
             ->hideOnForm();
+        yield DateTimeField::new('deliveredAt', 'Delivered At')
+            ->hideOnIndex()
+            ->setFormTypeOptions([
+                'required' => false,
+            ]);
         yield DateTimeField::new('updatedAt', 'Updated At')
             ->onlyOnDetail();
     }

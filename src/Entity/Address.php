@@ -257,4 +257,17 @@ class Address
 
         return $this;
     }
+
+    public function getFullAddress(): string
+    {
+        return implode(
+            ', ',
+            array_filter([
+                $this->street,
+                $this->additionalInfo,
+                trim(sprintf('%s %s', $this->postalCode, $this->city)),
+                $this->country,
+            ])
+        );
+    }
 }

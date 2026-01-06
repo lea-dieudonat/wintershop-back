@@ -2,17 +2,49 @@
 
 namespace App\Entity;
 
-use App\Repository\OrderRepository;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Enum\OrderStatus;
 use DateTimeImmutable;
+use App\Enum\OrderStatus;
+use App\State\OrderProvider;
+use ApiPlatform\Metadata\Get;
+use App\State\OrderProcessor;
+use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
+use Doctrine\ORM\Mapping as ORM;
+use App\Dto\Order\OrderOutputDto;
+use App\Repository\OrderRepository;
+use ApiPlatform\Metadata\ApiResource;
+use App\Dto\Order\OrderCancelInputDto;
+use ApiPlatform\Metadata\GetCollection;
+use App\Dto\Order\OrderDetailOutputDto;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/orders',
+            security: "is_granted('ROLE_USER')",
+            output: OrderOutputDto::class,
+            provider: OrderProvider::class
+        ),
+        new Get(
+            uriTemplate: '/orders/{id}',
+            security: "is_granted('ROLE_USER')",
+            output: OrderDetailOutputDto::class,
+            provider: OrderProvider::class
+        ),
+        new Patch(
+            uriTemplate: '/orders/{id}/cancel',
+            security: "is_granted('ROLE_USER')",
+            input: OrderCancelInputDto::class,
+            output: OrderDetailOutputDto::class,
+            processor: OrderProcessor::class,
+            inputFormats: ['json' => ['application/json']],
+        )
+    ],
+)]
 #[ORM\Table(name: '`order`')]
 #[UniqueEntity('email')]
 #[ORM\HasLifecycleCallbacks]
@@ -87,6 +119,9 @@ class Order
         orphanRemoval: true
     )]
     private Collection $items;
+
+    #[ORM\Column(nullable: true)]
+    private ?DateTimeImmutable $deliveredAt = null;
 
     public function __construct()
     {
@@ -255,5 +290,49 @@ class Order
             // Format: ORD-20241128-XXXXX
             $this->orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
         }
+    }
+
+    public function isCancellable(): bool
+    {
+        $statusIsCancellable = $this->status->isCancellable();
+
+        if (!$statusIsCancellable) {
+            return false;
+        }
+
+        // ex: annulation possible dans les 24h
+        $now = new DateTimeImmutable();
+        $cancellationDeadline = $this->createdAt->modify('+1 day');
+
+        return $now <= $cancellationDeadline;
+    }
+
+    public function canRequestRefund(): bool
+    {
+        if (!$this->status->canRequestRefund()) {
+            return false;
+        }
+
+        // Si livrée, vérifier si dans le délai de rétractation (14 jours)
+        if ($this->status === OrderStatus::DELIVERED) {
+            $now = new DateTimeImmutable();
+            $refundDeadline = $this->deliveredAt?->modify('+14 days');
+
+            return $now <= $refundDeadline;
+        }
+
+        return true;
+    }
+
+    public function getDeliveredAt(): ?DateTimeImmutable
+    {
+        return $this->deliveredAt;
+    }
+
+    public function setDeliveredAt(?DateTimeImmutable $deliveredAt): self
+    {
+        $this->deliveredAt = $deliveredAt;
+
+        return $this;
     }
 }

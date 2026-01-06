@@ -4,8 +4,9 @@ namespace App\Dto\Order;
 
 use DateTimeImmutable;
 use App\Dto\Address\AddressOutputDto;
+use App\Entity\Order;
 
-readonly class OrderDetailOutputDto
+final readonly class OrderDetailOutputDto
 {
     /**
      * @param OrderItemOutputDto[] $items
@@ -20,6 +21,25 @@ readonly class OrderDetailOutputDto
         public AddressOutputDto $shippingAddress,
         public array $items,
         public ?DateTimeImmutable $updatedAt = null,
-        public bool $canBeCancelled = false,
+        public bool $isCancellable = false,
     ) {}
+
+    public static function fromEntity(Order $order): self
+    {
+        return new self(
+            id: $order->getId(),
+            orderNumber: $order->getOrderNumber(),
+            status: $order->getStatus()->value,
+            totalAmount: $order->getTotalAmount(),
+            createdAt: $order->getCreatedAt(),
+            billingAddress: AddressOutputDto::fromEntity($order->getBillingAddress()),
+            shippingAddress: AddressOutputDto::fromEntity($order->getShippingAddress()),
+            items: array_map(
+                fn($item) => OrderItemOutputDto::fromEntity($item),
+                $order->getItems()->toArray()
+            ),
+            updatedAt: $order->getUpdatedAt(),
+            isCancellable: $order->isCancellable(),
+        );
+    }
 }

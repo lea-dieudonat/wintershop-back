@@ -48,16 +48,6 @@ class AddressProvider implements ProviderInterface
 
     public function transformToDto(Address $address): AddressOutputDto
     {
-        $fullAddress = implode(
-            ', ',
-            array_filter([
-                $address->getStreet(),
-                $address->getAdditionalInfo(),
-                trim(sprintf('%s %s', $address->getPostalCode(), $address->getCity())),
-                $address->getCountry(),
-                $address->getPhoneNumber(),
-            ])
-        );
 
         return new AddressOutputDto(
             id: $address->getId(),
@@ -70,7 +60,7 @@ class AddressProvider implements ProviderInterface
             additionalInfo: $address->getAdditionalInfo(),
             phoneNumber: $address->getPhoneNumber(),
             isDefault: $address->isDefault() ?? false,
-            fullAddress: $fullAddress,
+            fullAddress: $address->getFullAddress(),
             createdAt: $address->getCreatedAt(),
             updatedAt: $address->getUpdatedAt(),
         );

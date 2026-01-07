@@ -45,7 +45,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
 
             // Date de création aléatoire dans les 90 derniers jours
             $daysAgo = rand(0, 90);
-            $createdAt = new \DateTimeImmutable("-$daysAgo days");
+            $createdAt = new DateTimeImmutable("-$daysAgo days");
             $order->setCreatedAt($createdAt);
 
             // Répartir les statuts de manière variée

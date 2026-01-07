@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-final class OrderProcessor implements ProcessorInterface
+final class OrderCancellationProcessor implements ProcessorInterface
 {
     public function __construct(
         private readonly Security $security,

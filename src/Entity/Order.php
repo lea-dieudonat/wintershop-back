@@ -6,17 +6,21 @@ use DateTimeImmutable;
 use App\Enum\OrderStatus;
 use App\State\OrderProvider;
 use ApiPlatform\Metadata\Get;
-use App\State\OrderProcessor;
+use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use App\Dto\Order\OrderOutputDto;
 use App\Repository\OrderRepository;
+use App\State\OrderRefundProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use App\Dto\Order\OrderCancelInputDto;
+use App\Dto\Order\OrderRefundInputDto;
 use ApiPlatform\Metadata\GetCollection;
 use App\Dto\Order\OrderDetailOutputDto;
+use App\State\OrderCancellationProcessor;
 use Doctrine\Common\Collections\Collection;
+use App\Exception\OrderNotRefundableException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -40,8 +44,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             security: "is_granted('ROLE_USER')",
             input: OrderCancelInputDto::class,
             output: OrderDetailOutputDto::class,
-            processor: OrderProcessor::class,
+            processor: OrderCancellationProcessor::class,
             inputFormats: ['json' => ['application/json']],
+        ),
+        new Post(
+            uriTemplate: '/orders/{id}/refund',
+            security: "is_granted('ROLE_USER')",
+            input: OrderRefundInputDto::class,
+            processor: OrderRefundProcessor::class,
+            //inputFormats: ['json' => ['application/json']],
         )
     ],
 )]
@@ -123,6 +134,12 @@ class Order
     #[ORM\Column(nullable: true)]
     private ?DateTimeImmutable $deliveredAt = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $refundReason = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $refundRequestedAt = null;
+
     public function __construct()
     {
         $this->items = new ArrayCollection();
@@ -151,29 +168,29 @@ class Order
         return $this->status;
     }
 
-    public function setStatus(OrderStatus $status): self
+    public function setStatus(OrderStatus $status): static
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function markAsPaid(): self
+    public function markAsPaid(): static
     {
         return $this->setStatus(OrderStatus::PAID);
     }
 
-    public function markAsShipped(): self
+    public function markAsShipped(): static
     {
         return $this->setStatus(OrderStatus::SHIPPED);
     }
 
-    public function markAsDelivered(): self
+    public function markAsDelivered(): static
     {
         return $this->setStatus(OrderStatus::DELIVERED);
     }
 
-    public function cancel(): self
+    public function cancel(): static
     {
         if (!$this->status->isCancellable()) {
             throw new \RuntimeException('Cette commande ne peut plus être annulée');
@@ -307,21 +324,22 @@ class Order
         return $now <= $cancellationDeadline;
     }
 
-    public function canRequestRefund(): bool
+    public function canRequestRefund(): void
     {
-        if (!$this->status->canRequestRefund()) {
-            return false;
+        if ($this->refundRequestedAt !== null) {
+            throw OrderNotRefundableException::alreadyRequested();
         }
 
-        // Si livrée, vérifier si dans le délai de rétractation (14 jours)
-        if ($this->status === OrderStatus::DELIVERED) {
-            $now = new DateTimeImmutable();
-            $refundDeadline = $this->deliveredAt?->modify('+14 days');
-
-            return $now <= $refundDeadline;
+        if ($this->status !== OrderStatus::DELIVERED) {
+            throw OrderNotRefundableException::notDelivered();
         }
 
-        return true;
+        $now = new DateTimeImmutable();
+        $refundDeadline = $this->deliveredAt?->modify('+14 days');
+
+        if ($refundDeadline === null || $now > $refundDeadline) {
+            throw OrderNotRefundableException::deadlineExpired();
+        }
     }
 
     public function getDeliveredAt(): ?DateTimeImmutable
@@ -329,9 +347,33 @@ class Order
         return $this->deliveredAt;
     }
 
-    public function setDeliveredAt(?DateTimeImmutable $deliveredAt): self
+    public function setDeliveredAt(?DateTimeImmutable $deliveredAt): static
     {
         $this->deliveredAt = $deliveredAt;
+
+        return $this;
+    }
+
+    public function getRefundReason(): ?string
+    {
+        return $this->refundReason;
+    }
+
+    public function setRefundReason(?string $refundReason): static
+    {
+        $this->refundReason = $refundReason;
+
+        return $this;
+    }
+
+    public function getRefundRequestedAt(): ?DateTimeImmutable
+    {
+        return $this->refundRequestedAt;
+    }
+
+    public function setRefundRequestedAt(?DateTimeImmutable $refundRequestedAt): static
+    {
+        $this->refundRequestedAt = $refundRequestedAt;
 
         return $this;
     }

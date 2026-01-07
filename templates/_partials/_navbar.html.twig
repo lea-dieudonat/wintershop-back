@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ path(r('HOME').value) }}">❄️ Winter Sports Shop</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path(r('HOME').value) }}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path(r('SHOP').value) }}">Boutique</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path(r('CART').value) }}">Panier</a>
+                </li>
+                
+                {% if app.user %}
+                    {# Utilisateur connecté - Dropdown Bootstrap #}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            👤 {{ app.user.firstName }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#">Mon compte</a></li>
+                            <li><a class="dropdown-item" href="#">Mes commandes</a></li>
+                            <li><a class="dropdown-item" href="#">Mes adresses</a></li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ path('admin') }}">⚙️ Administration</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path(r('LOGOUT').value) }}">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    {# Utilisateur non connecté #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path(r('LOGIN').value) }}">Connexion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path(r('REGISTER').value) }}">Inscription</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

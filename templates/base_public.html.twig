@@ -11,35 +11,12 @@
             {# Custom CSS #}
             <link rel="stylesheet" href="{{ asset('css/base.css') }}">
             <link rel="stylesheet" href="{{ asset('css/shop.css') }}">
-        {% endblock %}
-
-        {% block javascripts %}
+            <link rel="stylesheet" href="{{ asset('css/dropdown.css') }}">
         {% endblock %}
     </head>
     <body>
         <header>
-            <nav>
-                <a href="{{ path(r('HOME').value) }}" class="logo">❄️ Winter Sports Shop</a>
-                <ul class="nav-links">
-                    <li><a href="{{ path(r('HOME').value) }}">Accueil</a></li>
-                    <li><a href="{{ path(r('SHOP').value) }}">Boutique</a></li>
-                    <li><a href="{{ path(r('CART').value) }}">Panier</a></li>
-                    {% if app.user %}
-                        {# Utilisateur connecté #}
-                        <li><a href="#">👤 {{ app.user.firstName }}</a></li>
-
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="{{ path(r('CATEGORY').value) }}">⚙️ Admin</a></li>
-                        {% endif %}
-
-                        <li><a href="{{ path(r('LOGOUT').value) }}">Déconnexion</a></li>
-                    {% else %}
-                        {# Utilisateur non connecté #}
-                        <li><a href="{{ path(r('LOGIN').value) }}">Connexion</a></li>
-                        <li><a href="{{ path(r('REGISTER').value) }}">Inscription</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
+            {% include('_partials/_navbar.html.twig') %}
         </header>
 
         <main>
@@ -55,7 +32,11 @@
         </main>
 
         <footer>
-            <p>&copy; {{ 'now'|date('Y') }} Winter Sports Shop - Tous droits réservés</p>
+            {% include('_partials/_footer.html.twig') %}
         </footer>
+
+        {% block javascripts %}
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        {% endblock %}
     </body>
 </html>

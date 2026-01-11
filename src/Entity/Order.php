@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Exception\OrderNotRefundableException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ApiResource(
@@ -30,14 +31,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         new GetCollection(
             uriTemplate: '/orders',
             security: "is_granted('ROLE_USER')",
-            output: OrderOutputDto::class,
-            provider: OrderProvider::class
+            normalizationContext: ['groups' => ['order:list']]
         ),
         new Get(
             uriTemplate: '/orders/{id}',
             security: "is_granted('ROLE_USER')",
-            output: OrderDetailOutputDto::class,
-            provider: OrderProvider::class
+            normalizationContext: ['groups' => ['order:detail']]
         ),
         new Patch(
             uriTemplate: '/orders/{id}/cancel',
@@ -64,6 +63,7 @@ class Order
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['order:list', 'order:detail'])]
     private ?int $id = null;
 
     /**
@@ -72,6 +72,7 @@ class Order
      * Affiché au client et utilisé pour le support.
      */
     #[ORM\Column(length: 50, unique: true, options: ['comment' => 'Numéro unique de commande'])]
+    #[Groups(['order:list', 'order:detail'])]
     private ?string $orderNumber = null;
 
     /**
@@ -85,6 +86,7 @@ class Order
         enumType: OrderStatus::class,
         options: ['comment' => 'Statut de la commande']
     )]
+    #[Groups(['order:list', 'order:detail'])]
     private OrderStatus $status = OrderStatus::PENDING;
 
     /**
@@ -100,12 +102,15 @@ class Order
         scale: 2,
         options: ['comment' => 'Montant total TTC en EUR']
     )]
+    #[Groups(['order:list', 'order:detail'])]
     private string $totalAmount = '0.00';
 
     #[ORM\Column]
+    #[Groups(['order:list', 'order:detail'])]
     private DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['order:detail'])]
     private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'orders')]
@@ -114,10 +119,12 @@ class Order
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['order:detail'])]
     private ?Address $shippingAddress = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['order:detail'])]
     private ?Address $billingAddress = null;
 
     /**
@@ -129,15 +136,19 @@ class Order
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[Groups(['order:list', 'order:detail'])]
     private Collection $items;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['order:detail'])]
     private ?DateTimeImmutable $deliveredAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['order:detail'])]
     private ?string $refundReason = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['order:detail'])]
     private ?DateTimeImmutable $refundRequestedAt = null;
 
     public function __construct()

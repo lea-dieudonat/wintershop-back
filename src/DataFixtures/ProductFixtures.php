@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\ProductTranslation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -270,8 +271,9 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($products as $productData) {
             $product = new Product();
-            $product->setName($productData['name']['fr']); //TODO translation
-            $product->setDescription($productData['description']['fr']); //TODO translation
+            // Set default name/description (French as fallback for old data)
+            $product->setName($productData['name']['fr']);
+            $product->setDescription($productData['description']['fr']);
             $product->setPrice($productData['price']);
             $product->setStock($productData['stock']);
             $product->setIsActive($productData['isActive']);
@@ -279,6 +281,15 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             // Set category reference
             $category = $this->getReference($productData['category'], Category::class);
             $product->setCategory($category);
+
+            // Create translations for each language
+            foreach ($productData['name'] as $locale => $name) {
+                $translation = new ProductTranslation();
+                $translation->setLocale($locale);
+                $translation->setName($name);
+                $translation->setDescription($productData['description'][$locale]);
+                $product->addTranslation($translation);
+            }
 
             $manager->persist($product);
 

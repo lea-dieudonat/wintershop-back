@@ -151,10 +151,18 @@ class Product
     #[ORM\OneToMany(targetEntity: CartItem::class, mappedBy: 'product')]
     private Collection $cartItems;
 
+    /**
+     * @var Collection<int, ProductTranslation>
+     */
+    #[ORM\OneToMany(targetEntity: ProductTranslation::class, mappedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['product:read'])]
+    private Collection $translations;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
         $this->cartItems = new ArrayCollection();
+        $this->translations = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -381,5 +389,53 @@ class Product
         }
         $this->stock += $quantity;
         return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductTranslation>
+     */
+    public function getTranslations(): Collection
+    {
+        return $this->translations;
+    }
+
+    public function addTranslation(ProductTranslation $translation): static
+    {
+        if (!$this->translations->contains($translation)) {
+            $this->translations->add($translation);
+            $translation->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranslation(ProductTranslation $translation): static
+    {
+        if ($this->translations->removeElement($translation)) {
+            if ($translation->getProduct() === $this) {
+                $translation->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get translation by locale, or return default (French) if not found.
+     */
+    public function getTranslationByLocale(string $locale): ?ProductTranslation
+    {
+        foreach ($this->translations as $translation) {
+            if ($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        // Fallback to French if locale not found
+        if ($locale !== 'fr') {
+            return $this->getTranslationByLocale('fr');
+        }
+
+        return null;
     }
 }

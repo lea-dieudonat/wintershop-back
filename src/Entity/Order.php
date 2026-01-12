@@ -73,7 +73,7 @@ class Order
      */
     #[ORM\Column(length: 50, unique: true, options: ['comment' => 'Numéro unique de commande'])]
     #[Groups(['order:list', 'order:detail'])]
-    private ?string $orderNumber = null;
+    private ?string $reference = null;
 
     /**
      * État de la commande dans le workflow.
@@ -162,14 +162,14 @@ class Order
         return $this->id;
     }
 
-    public function getOrderNumber(): ?string
+    public function getReference(): ?string
     {
-        return $this->orderNumber;
+        return $this->reference;
     }
 
-    public function setOrderNumber(string $orderNumber): static
+    public function setReference(string $reference): static
     {
-        $this->orderNumber = $orderNumber;
+        $this->reference = $reference;
 
         return $this;
     }
@@ -289,6 +289,12 @@ class Order
         return $this->items;
     }
 
+    #[Groups(['order:list', 'order:detail'])]
+    public function getItemCount(): int
+    {
+        return $this->items->count();
+    }
+
     public function addItem(OrderItem $item): static
     {
         if (!$this->items->contains($item)) {
@@ -312,11 +318,11 @@ class Order
     }
 
     #[ORM\PrePersist]
-    public function generateOrderNumber(): void
+    public function generateReference(): void
     {
-        if ($this->orderNumber === null) {
+        if ($this->reference === null) {
             // Format: ORD-20241128-XXXXX
-            $this->orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+            $this->reference = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
         }
     }
 

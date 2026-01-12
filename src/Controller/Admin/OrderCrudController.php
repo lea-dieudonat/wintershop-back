@@ -31,7 +31,7 @@ class OrderCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Order')
             ->setEntityLabelInPlural('Orders')
             ->setPageTitle('index', 'Orders Management')
-            ->setSearchFields(['orderNumber', 'user.email', 'user.firstName', 'user.lastName', 'status'])
+            ->setSearchFields(['reference', 'user.email', 'user.firstName', 'user.lastName', 'status'])
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->setPaginatorPageSize(25);
     }
@@ -47,8 +47,8 @@ class OrderCrudController extends AbstractCrudController
     {
         yield IdField::new('id')
             ->onlyOnIndex();
-        yield TextField::new('orderNumber', 'Order Number')
-            ->setLabel('Order #')
+        yield TextField::new('reference', 'Reference')
+            ->setLabel('Reference #')
             ->setDisabled();
         yield AssociationField::new('user')
             ->setDisabled();

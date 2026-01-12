@@ -295,7 +295,7 @@ final class CheckoutControllerTest extends WebTestCase
             'totalPrice' => '199.99',
         ]);
 
-        $this->client->request('GET', '/checkout/success/' . $order->getOrderNumber());
+        $this->client->request('GET', '/checkout/success/' . $order->getReference());
         $this->assertResponseIsSuccessful();
     }
 }

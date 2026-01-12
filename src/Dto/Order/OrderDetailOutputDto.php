@@ -13,7 +13,7 @@ final readonly class OrderDetailOutputDto
      */
     public function __construct(
         public int $id,
-        public string $orderNumber,
+        public string $reference,
         public string $status,
         public string $totalAmount,
         public DateTimeImmutable $createdAt,
@@ -28,7 +28,7 @@ final readonly class OrderDetailOutputDto
     {
         return new self(
             id: $order->getId(),
-            orderNumber: $order->getOrderNumber(),
+            reference: $order->getReference(),
             status: $order->getStatus()->value,
             totalAmount: $order->getTotalAmount(),
             createdAt: $order->getCreatedAt(),

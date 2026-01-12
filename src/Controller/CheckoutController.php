@@ -108,11 +108,11 @@ class CheckoutController extends AbstractController
 
             $this->addFlash('success', sprintf(
                 'Order %s created successfully! You will receive a confirmation email.',
-                $order->getOrderNumber()
+                $order->getReference()
             ));
 
             return $this->redirectToRoute(Route::CHECKOUT_SUCCESS->value, [
-                'orderNumber' => $order->getOrderNumber()
+                'reference' => $order->getReference()
             ]);
         } catch (\RuntimeException $e) {
             $this->addFlash('error', $e->getMessage());
@@ -120,14 +120,14 @@ class CheckoutController extends AbstractController
         }
     }
 
-    #[RouteAttribute('/success/{orderNumber}', name: Route::CHECKOUT_SUCCESS->value)]
-    public function success(string $orderNumber): Response
+    #[RouteAttribute('/success/{reference}', name: Route::CHECKOUT_SUCCESS->value)]
+    public function success(string $reference): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
         $order = $this->entityManager->getRepository(\App\Entity\Order::class)
-            ->findOneBy(['orderNumber' => $orderNumber, 'user' => $user]);
+            ->findOneBy(['reference' => $reference, 'user' => $user]);
 
         if (!$order) {
             throw $this->createNotFoundException('Order not found.');

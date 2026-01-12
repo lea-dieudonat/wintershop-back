@@ -5,7 +5,6 @@ namespace App\Service;
 use LogicException;
 use App\Entity\Order;
 use DateTimeImmutable;
-use App\Dto\Order\OrderOutputDto;
 use App\Dto\Order\OrderItemOutputDto;
 use App\Dto\Order\OrderDetailOutputDto;
 use Doctrine\Common\Collections\Collection;
@@ -19,28 +18,6 @@ class OrderService
     ) {}
 
     /**
-     * Convert an Order entity to an OrderOutputDto for listing purposes.
-     * @param Order $order
-     * @return OrderOutputDto
-     */
-    public function toOutputDto(Order $order): OrderOutputDto
-    {
-        $itemCount = 0;
-        foreach ($order->getItems() as $item) {
-            $itemCount += $item->getQuantity();
-        }
-
-        return new OrderOutputDto(
-            id: $order->getId(),
-            orderNumber: $order->getOrderNumber(),
-            status: $order->getStatus()->value,
-            totalAmount: $order->getTotalAmount(),
-            createdAt: $order->getCreatedAt(),
-            itemCount: $itemCount,
-        );
-    }
-
-    /**
      * Convert an Order entity to an OrderDetailOutputDto for detailed view purposes.
      * @param Order $order
      * @return OrderDetailOutputDto
@@ -49,7 +26,7 @@ class OrderService
     {
         return new OrderDetailOutputDto(
             id: $order->getId(),
-            orderNumber: $order->getOrderNumber(),
+            reference: $order->getReference(),
             status: $order->getStatus()->value,
             totalAmount: $order->getTotalAmount(),
             createdAt: $order->getCreatedAt(),

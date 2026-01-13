@@ -62,7 +62,7 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups(['product:read', 'product:write', 'order:detail'])]
     private string $name;
 
     /**
@@ -116,7 +116,7 @@ class Product
     private int $stock = 0;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['product:read', 'product:write'])]
+    #[Groups(['product:read', 'product:write', 'order:detail'])]
     private ?string $imageUrl = null;
 
     /**

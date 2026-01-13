@@ -2,21 +2,22 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\AddressRepository;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
-use App\Dto\Address\AddressInputDto;
-use App\Dto\Address\AddressOutputDto;
+use ApiPlatform\Metadata\Post;
 use App\State\AddressProvider;
+use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
 use App\State\AddressProcessor;
+use ApiPlatform\Metadata\Delete;
+use Doctrine\ORM\Mapping as ORM;
+use App\Dto\Address\AddressInputDto;
+use ApiPlatform\Metadata\ApiResource;
+use App\Dto\Address\AddressOutputDto;
+use App\Repository\AddressRepository;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 #[ApiResource(
@@ -44,18 +45,22 @@ class Address
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['order:detail'])]
     private string $street;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
+    #[Groups(['order:detail'])]
     private string $city;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
+    #[Groups(['order:detail'])]
     private string $postalCode;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
+    #[Groups(['order:detail'])]
     private string $country;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

@@ -4,13 +4,11 @@ namespace App\Entity;
 
 use DateTimeImmutable;
 use App\Enum\OrderStatus;
-use App\State\OrderProvider;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
-use App\Dto\Order\OrderOutputDto;
 use App\Repository\OrderRepository;
 use App\State\OrderRefundProcessor;
 use ApiPlatform\Metadata\ApiResource;

@@ -24,6 +24,20 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
+        // Create test orders with each status for test user
+        $testUser = $manager->getRepository(User::class)->findOneBy(['email' => 'test@wintershop.com']);
+        if ($testUser) {
+            $testUserAddresses = $manager->getRepository(Address::class)->findBy(['user' => $testUser]);
+            if (!empty($testUserAddresses)) {
+                $address = $testUserAddresses[0];
+                // Create one order for each status
+                foreach (OrderStatus::cases() as $status) {
+                    $this->createOrderWithStatus($manager, $testUser, $address, $address, $products, $status);
+                }
+            }
+        }
+
+        // Create random orders for all users
         for ($i = 1; $i <= 30; $i++) {
             $user = $users[array_rand($users)];
 
@@ -93,6 +107,56 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $manager->flush();
+    }
+
+    /**
+     * Create an order with a specific status and add items.
+     */
+    private function createOrderWithStatus(
+        ObjectManager $manager,
+        User $user,
+        Address $shippingAddress,
+        Address $billingAddress,
+        array $products,
+        OrderStatus $status
+    ): void {
+        $order = new Order();
+        $order->setUser($user);
+        $order->setShippingAddress($shippingAddress);
+        $order->setBillingAddress($billingAddress);
+        $order->setStatus($status);
+
+        // Create at specific times to avoid cancellation issues
+        $baseDate = new DateTimeImmutable('-30 days');
+        $order->setCreatedAt($baseDate);
+
+        // Set dates based on status
+        $this->setOrderDates($order, $status, $baseDate);
+
+        $totalAmount = '0.00';
+
+        // Add 1-2 items
+        $itemCount = rand(1, 2);
+        for ($i = 0; $i < $itemCount; $i++) {
+            $product = $products[array_rand($products)];
+            $quantity = rand(1, 2);
+
+            $orderItem = new OrderItem();
+            $orderItem->setParentOrder($order);
+            $orderItem->setProduct($product);
+            $orderItem->setQuantity($quantity);
+            $orderItem->setUnitPrice($product->getPrice());
+
+            $totalItem = bcmul($product->getPrice(), (string)$quantity, 2);
+            $orderItem->setTotalPrice($totalItem);
+
+            $totalAmount = bcadd($totalAmount, $totalItem, 2);
+
+            $manager->persist($orderItem);
+        }
+
+        $order->setTotalAmount($totalAmount);
+        $manager->persist($order);
     }
 
     /**

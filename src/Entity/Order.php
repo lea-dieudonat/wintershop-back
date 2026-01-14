@@ -19,6 +19,7 @@ use App\Dto\Order\OrderDetailOutputDto;
 use App\State\OrderCancellationProcessor;
 use Doctrine\Common\Collections\Collection;
 use App\Exception\OrderNotRefundableException;
+use App\Exception\OrderNotCancellableException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -201,9 +202,7 @@ class Order
 
     public function cancel(): static
     {
-        if (!$this->status->isCancellable()) {
-            throw new \RuntimeException('Cette commande ne peut plus être annulée');
-        }
+        $this->canRequestCancellation();
         return $this->setStatus(OrderStatus::CANCELLED);
     }
 
@@ -339,13 +338,28 @@ class Order
         return $now <= $cancellationDeadline;
     }
 
+    public function canRequestCancellation(): void
+    {
+        if (!$this->status->isCancellable()) {
+            throw OrderNotCancellableException::invalidStatus();
+        }
+
+        $now = new DateTimeImmutable();
+        $cancellationDeadline = $this->createdAt->modify('+1 day');
+
+        if ($now > $cancellationDeadline) {
+            throw OrderNotCancellableException::deadlineExpired();
+        }
+    }
+
     public function canRequestRefund(): void
     {
         if ($this->refundRequestedAt !== null) {
             throw OrderNotRefundableException::alreadyRequested();
         }
 
-        if ($this->status !== OrderStatus::DELIVERED) {
+        //if ($this->status !== OrderStatus::DELIVERED) {
+        if (!$this->status->canRequestRefund()) {
             throw OrderNotRefundableException::notDelivered();
         }
 

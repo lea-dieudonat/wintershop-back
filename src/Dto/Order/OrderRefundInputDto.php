@@ -7,12 +7,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 readonly class OrderRefundInputDto
 {
     public function __construct(
-        #[Assert\NotBlank(message: 'Refund reason must not be blank.')]
+        #[Assert\NotBlank(message: 'orders.refund.reasonNotBlank')]
         #[Assert\Length(
             min: 10,
             max: 500,
-            minMessage: 'Refund reason must be at least {{ limit }} characters long.',
-            maxMessage: 'Refund reason cannot be longer than {{ limit }} characters.'
+            minMessage: 'orders.refund.reasonMinLength',
+            maxMessage: 'orders.refund.reasonMaxLength'
         )]
         public ?string $reason = null, // TODO: modify to enum later
     ) {}

@@ -11,6 +11,7 @@ use App\Dto\Order\OrderDetailOutputDto;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Exception\OrderNotCancellableException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -49,8 +50,10 @@ final class OrderCancellationProcessor implements ProcessorInterface
         }
 
         // Check if the order is in a cancellable state
-        if (!$order->isCancellable()) {
-            throw new BadRequestHttpException('Order cannot be cancelled in its current state');
+        try {
+            $order->canRequestCancellation();
+        } catch (OrderNotCancellableException $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
 
         // Perform the cancellation

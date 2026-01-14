@@ -38,6 +38,7 @@ class UserFixtures extends Fixture
             ['email' => 'user1@example.com', 'firstName' => 'Jane', 'lastName' => 'Doe'],
             ['email' => 'user2@example.com', 'firstName' => 'John', 'lastName' => 'Smith'],
             ['email' => 'user3@example.com', 'firstName' => 'Alice', 'lastName' => 'Brown'],
+            ['email' => 'test@wintershop.com', 'firstName' => 'John', 'lastName' => 'Doe'],
         ];
 
         foreach ($regularUsers as $idx => $data) {
@@ -47,7 +48,7 @@ class UserFixtures extends Fixture
                 $data['firstName'],
                 $data['lastName'],
                 ['ROLE_USER'],
-                'userpassword',
+                'password123',
                 'user_regular_' . ($idx + 1)
             );
         }

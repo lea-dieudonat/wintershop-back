@@ -23,6 +23,7 @@ use App\Exception\OrderNotCancellableException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ApiResource(
@@ -323,22 +324,24 @@ class Order
         }
     }
 
-    public function isCancellable(): bool
+    public function canRequestCancellation(): bool
     {
-        $statusIsCancellable = $this->status->isCancellable();
-
-        if (!$statusIsCancellable) {
+        try {
+            $this->assertCanRequestCancellation();
+            return true;
+        } catch (OrderNotCancellableException) {
             return false;
         }
-
-        // ex: annulation possible dans les 24h
-        $now = new DateTimeImmutable();
-        $cancellationDeadline = $this->createdAt->modify('+1 day');
-
-        return $now <= $cancellationDeadline;
     }
 
-    public function canRequestCancellation(): void
+    #[Groups(['order:list', 'order:detail'])]
+    #[SerializedName('canRequestCancellation')]
+    public function getCanRequestCancellation(): bool
+    {
+        return $this->canRequestCancellation();
+    }
+
+    public function assertCanRequestCancellation(): void
     {
         if (!$this->status->isCancellable()) {
             throw OrderNotCancellableException::invalidStatus();
@@ -351,22 +354,35 @@ class Order
             throw OrderNotCancellableException::deadlineExpired();
         }
     }
+    public function canRequestRefund(): bool
+    {
+        try {
+            $this->assertCanRequestRefund();
+            return true;
+        } catch (OrderNotRefundableException) {
+            return false;
+        }
+    }
 
-    public function canRequestRefund(): void
+    #[Groups(['order:list', 'order:detail'])]
+    #[SerializedName('canRequestRefund')]
+    public function getCanRequestRefund(): bool
+    {
+        return $this->canRequestRefund();
+    }
+
+    public function assertCanRequestRefund(): void
     {
         if ($this->refundRequestedAt !== null) {
             throw OrderNotRefundableException::alreadyRequested();
         }
 
-        //if ($this->status !== OrderStatus::DELIVERED) {
         if (!$this->status->canRequestRefund()) {
             throw OrderNotRefundableException::notDelivered();
         }
 
-        $now = new DateTimeImmutable();
         $refundDeadline = $this->deliveredAt?->modify('+14 days');
-
-        if ($refundDeadline === null || $now > $refundDeadline) {
+        if ($refundDeadline === null || new DateTimeImmutable() > $refundDeadline) {
             throw OrderNotRefundableException::deadlineExpired();
         }
     }

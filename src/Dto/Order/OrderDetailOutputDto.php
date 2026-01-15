@@ -39,7 +39,7 @@ final readonly class OrderDetailOutputDto
                 $order->getItems()->toArray()
             ),
             updatedAt: $order->getUpdatedAt(),
-            isCancellable: $order->isCancellable(),
+            isCancellable: $order->canRequestCancellation(),
         );
     }
 }

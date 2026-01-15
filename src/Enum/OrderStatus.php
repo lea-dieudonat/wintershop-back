@@ -45,16 +45,8 @@ enum OrderStatus: string
      */
     public function canRequestRefund(): bool
     {
-        // On peut demander un remboursement si la commande est payée, en cours de traitement ou expédiée
-        return in_array(
-            $this,
-            [
-                self::PAID,
-                self::PROCESSING,
-                self::SHIPPED,
-                self::DELIVERED,
-            ]
-        );
+        // On peut demander un remboursement uniquement si la commande est livrée
+        return $this === self::DELIVERED;
     }
 
     /**
@@ -67,8 +59,8 @@ enum OrderStatus: string
         return match ($this) {
             self::PENDING => [self::PAID, self::CANCELLED],
             self::PAID => [self::PROCESSING],
-            self::PROCESSING => [self::SHIPPED, self::REFUND_REQUESTED],
-            self::SHIPPED => [self::DELIVERED, self::REFUND_REQUESTED],
+            self::PROCESSING => [self::SHIPPED],
+            self::SHIPPED => [self::DELIVERED],
             self::DELIVERED => [self::REFUND_REQUESTED],
             self::REFUND_REQUESTED => [self::REFUNDED, self::DELIVERED],
             self::CANCELLED => [],

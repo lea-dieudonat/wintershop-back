@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Operation;
 use App\Dto\Cart\CartItemOutputDto;
 use App\Dto\Product\ProductOutputDto;
 use ApiPlatform\State\ProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class CartProvider implements ProviderInterface
@@ -17,6 +18,7 @@ class CartProvider implements ProviderInterface
     public function __construct(
         private readonly Security $security,
         private readonly CartRepository $cartRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?CartOutputDto
@@ -27,7 +29,11 @@ class CartProvider implements ProviderInterface
         }
         $cart = $this->cartRepository->findOneBy(['user' => $user]);
         if (!$cart) {
-            return null;
+            // Auto-create empty cart if it doesn't exist
+            $cart = new Cart();
+            $cart->setUser($user);
+            $this->entityManager->persist($cart);
+            $this->entityManager->flush();
         }
         return $this->transformToDto($cart);
     }

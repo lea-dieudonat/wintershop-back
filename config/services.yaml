@@ -30,3 +30,7 @@ services:
     App\Service\StripePaymentService:
         arguments:
             $stripePublicKey: "%stripe.public_key%"
+
+    App\Controller\Api\StripeWebhookController:
+        arguments:
+            $webhookSecret: "%stripe.webhook_secret%"

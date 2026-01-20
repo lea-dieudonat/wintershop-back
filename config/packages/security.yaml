@@ -52,6 +52,7 @@ security:
     access_control:
         # Login API public
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/stripe/webhook, roles: PUBLIC_ACCESS }
         # Documentation API publique
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         # API publique (lecture seule)

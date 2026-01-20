@@ -8,6 +8,7 @@ use App\Entity\OrderItem;
 use App\Entity\Address;
 use App\Enum\OrderStatus;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Enum\ShippingMethod;
 
 class CheckoutService
 {
@@ -24,13 +25,21 @@ class CheckoutService
     public function createOrderFromCart(
         Cart $cart,
         Address $shippingAddress,
-        Address $billingAddress
+        Address $billingAddress,
+        ShippingMethod $shippingMethod
     ): Order {
         $this->validateCartForCheckout($cart);
 
-        $order = $this->createOrder($cart, $shippingAddress, $billingAddress);
-        $totalAmount = $this->convertCartItemsToOrderItems($cart, $order);
+        // Calculate products total
+        $order = $this->createOrder($cart, $shippingAddress, $billingAddress, $shippingMethod);
+        $productsTotal = $this->convertCartItemsToOrderItems($cart, $order);
 
+        // Calculate shipping cost
+        $shippingCost = $shippingMethod->getActualCost($productsTotal);
+        $order->setShippingCost($shippingCost);
+
+        // Calculate final total (product + shipping)
+        $totalAmount = bcadd($productsTotal, $shippingCost, 2);
         $order->setTotalAmount($totalAmount);
 
         $this->entityManager->persist($order);
@@ -65,12 +74,17 @@ class CheckoutService
     /**
      * Create an order entity from cart data
      */
-    private function createOrder(Cart $cart, Address $shippingAddress, Address $billingAddress): Order
-    {
+    private function createOrder(
+        Cart $cart,
+        Address $shippingAddress,
+        Address $billingAddress,
+        ShippingMethod $shippingMethod
+    ): Order {
         $order = new Order();
         $order->setUser($cart->getUser());
         $order->setShippingAddress($shippingAddress);
         $order->setBillingAddress($billingAddress);
+        $order->setShippingMethod($shippingMethod);
         $order->setStatus(OrderStatus::PENDING);
         $order->setCreatedAt(new \DateTimeImmutable());
 
@@ -80,7 +94,7 @@ class CheckoutService
     /**
      * Convert cart items to order items and calculate total
      *
-     * @return string Total amount
+     * @return string Total amount (products only, without shipping)
      */
     private function convertCartItemsToOrderItems(Cart $cart, Order $order): string
     {

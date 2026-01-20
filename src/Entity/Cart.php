@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\State\CartProvider;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Delete;
+use App\State\CartProcessor;
 use Doctrine\DBAL\Types\Types;
 use App\Dto\Cart\CartOutputDto;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,6 +21,12 @@ use Doctrine\Common\Collections\ArrayCollection;
         new Get(
             uriTemplate: '/cart',
             security: "is_granted('ROLE_USER')",
+        ),
+        new Delete(
+            uriTemplate: '/cart',
+            output: CartOutputDto::class,
+            security: "is_granted('ROLE_USER')",
+            processor: CartProcessor::class,
         ),
     ],
     output: CartOutputDto::class,

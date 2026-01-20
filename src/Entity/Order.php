@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use DateTimeImmutable;
 use App\Enum\OrderStatus;
+use App\Enum\ShippingMethod;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
@@ -21,9 +22,9 @@ use Doctrine\Common\Collections\Collection;
 use App\Exception\OrderNotRefundableException;
 use App\Exception\OrderNotCancellableException;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ApiResource(
@@ -51,7 +52,6 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
             security: "is_granted('ROLE_USER')",
             input: OrderRefundInputDto::class,
             processor: OrderRefundProcessor::class,
-            //inputFormats: ['json' => ['application/json']],
         )
     ],
 )]
@@ -150,6 +150,38 @@ class Order
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups(['order:detail'])]
     private ?DateTimeImmutable $refundRequestedAt = null;
+
+    // Stripe payment tracking
+    #[ORM\Column(length: 255, nullable: true, options: ['comment' => 'ID de session Stripe Checkout'])]
+    #[Groups(['order:detail'])]
+    private ?string $stripeSessionId = null;
+
+    #[ORM\Column(length: 255, nullable: true, options: ['comment' => 'ID PaymentIntent Stripe'])]
+    #[Groups(['order:detail'])]
+    private ?string $stripePaymentIntentId = null;
+
+    #[ORM\Column(nullable: true, options: ['comment' => 'Date de paiement effectif'])]
+    #[Groups(['order:list', 'order:detail'])]
+    private ?DateTimeImmutable $paidAt = null;
+
+    // Shipping information
+    #[ORM\Column(
+        type: Types::DECIMAL,
+        precision: 10,
+        scale: 2,
+        options: ['comment' => 'Frais de livraison TTC en EUR']
+    )]
+    #[Groups(['order:list', 'order:detail'])]
+    private string $shippingCost = '0.00';
+
+    #[ORM\Column(
+        type: 'string',
+        length: 50,
+        enumType: ShippingMethod::class,
+        options: ['comment' => 'Mode de livraison choisi']
+    )]
+    #[Groups(['order:detail'])]
+    private ShippingMethod $shippingMethod = ShippingMethod::STANDARD;
 
     public function __construct()
     {
@@ -420,6 +452,61 @@ class Order
     {
         $this->refundRequestedAt = $refundRequestedAt;
 
+        return $this;
+    }
+
+    public function getStripeSessionId(): ?string
+    {
+        return $this->stripeSessionId;
+    }
+
+    public function setStripeSessionId(?string $stripeSessionId): static
+    {
+        $this->stripeSessionId = $stripeSessionId;
+        return $this;
+    }
+
+    public function getStripePaymentIntentId(): ?string
+    {
+        return $this->stripePaymentIntentId;
+    }
+
+    public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
+    {
+        $this->stripePaymentIntentId = $stripePaymentIntentId;
+        return $this;
+    }
+
+    public function getPaidAt(): ?DateTimeImmutable
+    {
+        return $this->paidAt;
+    }
+
+    public function setPaidAt(?DateTimeImmutable $paidAt): static
+    {
+        $this->paidAt = $paidAt;
+        return $this;
+    }
+
+    public function getShippingCost(): string
+    {
+        return $this->shippingCost;
+    }
+
+    public function setShippingCost(string $shippingCost): static
+    {
+        $this->shippingCost = $shippingCost;
+        return $this;
+    }
+
+    public function getShippingMethod(): ShippingMethod
+    {
+        return $this->shippingMethod;
+    }
+
+    public function setShippingMethod(ShippingMethod $shippingMethod): static
+    {
+        $this->shippingMethod = $shippingMethod;
         return $this;
     }
 }

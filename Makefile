@@ -86,6 +86,8 @@ db-drop: ## Drop database
 	docker compose exec php php bin/console doctrine:database:drop --force
 
 db-migrate: ## Run database migrations
+	@echo "$(YELLOW)Generating migration...$(NC)"
+	docker compose exec php php bin/console make:migration
 	@echo "$(YELLOW)Running migrations...$(NC)"
 	docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 

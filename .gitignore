@@ -32,3 +32,7 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+convert-commits.ps1
+convert-commits.sh
+.gitignore
+commit-mapping.txt

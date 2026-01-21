@@ -14,6 +14,12 @@ Complete documentation of the application's data model, organized by domain.
 -   **Cart**: Shopping cart persistence and lifecycle
 -   **CartItem**: Individual items in the cart with quantity management
 
+### [Checkout](./checkout.md)
+
+-   **CheckoutService**: Cart-to-order conversion and order creation workflow
+-   **StripePaymentService**: Payment processing and Stripe integration
+-   **ShippingMethod**: Shipping options and cost calculation
+
 ### [Orders](./orders.md)
 
 -   **Order**: Customer orders with complete workflow and reference system

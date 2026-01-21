@@ -10,6 +10,7 @@
 -   **updatedAt**: `DateTimeImmutable | null` - Mise à jour automatique lors de modifications
 -   **deliveredAt**: `DateTimeImmutable | null` - Définie automatiquement quand statut → `delivered`
 -   **refundRequestedAt**: `DateTimeImmutable | null` - Définie quand client demande un remboursement
+-   **paidAt**: `DateTimeImmutable | null` - Définie automatiquement au passage à `paid` (webhook Stripe)
 
 #### Relationships
 
@@ -17,6 +18,13 @@
 -   **shippingAddress**: `ManyToOne(Address)` - Adresse de livraison
 -   **billingAddress**: `ManyToOne(Address)` - Adresse de facturation
 -   **items**: `OneToMany(OrderItem)` - Articles de la commande (cascade delete)
+
+#### Payment & Shipping
+
+-   **shippingCost**: `DECIMAL(10,2)` - Frais de livraison TTC (définis au checkout)
+-   **shippingMethod**: `ShippingMethod` enum - Méthode de livraison choisie (standard, express, relay_point)
+-   **stripeSessionId**: `string(255) | null` - ID de la session Stripe Checkout (utilisé pour le webhook)
+-   **stripePaymentIntentId**: `string(255) | null` - ID du PaymentIntent Stripe (si applicable)
 
 ### reference
 

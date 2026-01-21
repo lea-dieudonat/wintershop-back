@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/api', name: 'api_')]
+#[Route('/api/checkout', name: 'api_checkout_')]
 class CheckoutController extends AbstractController
 {
     public function __construct(
@@ -33,7 +33,7 @@ class CheckoutController extends AbstractController
     /**
      * Create an order and initiate Stripe payment
      */
-    #[Route('/checkout', name: 'checkout', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     public function checkout(
         #[MapRequestPayload] CheckoutInputDto $checkoutInputDto
     ): JsonResponse {
@@ -120,7 +120,7 @@ class CheckoutController extends AbstractController
     /**
      * Success callback after payment
      */
-    #[Route('/checkout/success/{orderId}', name: 'checkout_success', methods: ['GET'])]
+    #[Route('/success/{orderId}', name: 'success', methods: ['GET'])]
     public function checkoutSuccess(int $orderId): JsonResponse
     {
         /** @var \App\Entity\User $user */
@@ -141,7 +141,7 @@ class CheckoutController extends AbstractController
     /**
      * Cancel callback after payment
      */
-    #[Route('/checkout/cancel/{orderId}', name: 'checkout_cancel', methods: ['GET'])]
+    #[Route('/cancel/{orderId}', name: 'cancel', methods: ['GET'])]
     public function checkoutCancel(int $orderId): JsonResponse
     {
         /** @var \App\Entity\User $user */

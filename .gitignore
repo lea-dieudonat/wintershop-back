@@ -36,3 +36,5 @@ convert-commits.ps1
 convert-commits.sh
 .gitignore
 commit-mapping.txt
+.phpunit.cache/test-results
+.phpunit.cache/test-results

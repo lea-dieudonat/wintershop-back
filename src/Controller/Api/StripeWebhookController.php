@@ -24,7 +24,7 @@ class StripeWebhookController extends AbstractController
         private StripeClient $stripeClient,
         private LoggerInterface $logger,
         private CheckoutService $checkoutService,
-        private string $stripeWebhookSecret
+        private string $webhookSecret
     ) {}
 
     /**
@@ -45,7 +45,7 @@ class StripeWebhookController extends AbstractController
             $event = Webhook::constructEvent(
                 $payload,
                 $sigHeader,
-                $this->stripeWebhookSecret
+                $this->webhookSecret
             );
         } catch (\UnexpectedValueException $e) {
             $this->logger->error('Stripe webhook payload invalid: ' . $e->getMessage());

@@ -44,7 +44,7 @@ final readonly class OrderRefundProcessor implements ProcessorInterface
 
         // Check if the order is in a refundable state
         try {
-            $order->canRequestRefund();
+            $order->assertCanRequestRefund();
         } catch (OrderNotRefundableException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }

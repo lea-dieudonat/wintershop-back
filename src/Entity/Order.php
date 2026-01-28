@@ -18,6 +18,8 @@ use App\Dto\Order\OrderRefundInputDto;
 use ApiPlatform\Metadata\GetCollection;
 use App\Dto\Order\OrderDetailOutputDto;
 use App\State\OrderCancellationProcessor;
+use App\State\OrderCollectionProvider;
+use App\State\OrderItemProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Exception\OrderNotRefundableException;
 use App\Exception\OrderNotCancellableException;
@@ -32,26 +34,30 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
         new GetCollection(
             uriTemplate: '/orders',
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['order:list']]
+            normalizationContext: ['groups' => ['order:list']],
+            provider: OrderCollectionProvider::class
         ),
         new Get(
             uriTemplate: '/orders/{id}',
-            security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['order:detail']]
+            security: "is_granted('ROLE_USER') and object.getUser() == user",
+            normalizationContext: ['groups' => ['order:detail']],
+            provider: OrderItemProvider::class
         ),
         new Patch(
             uriTemplate: '/orders/{id}/cancel',
-            security: "is_granted('ROLE_USER')",
+            security: "is_granted('ROLE_USER') and object.getUser() == user",
             input: OrderCancelInputDto::class,
             output: OrderDetailOutputDto::class,
             processor: OrderCancellationProcessor::class,
+            provider: OrderItemProvider::class,
             inputFormats: ['json' => ['application/json']],
         ),
         new Post(
             uriTemplate: '/orders/{id}/refund',
-            security: "is_granted('ROLE_USER')",
+            security: "is_granted('ROLE_USER') and object.getUser() == user",
             input: OrderRefundInputDto::class,
             processor: OrderRefundProcessor::class,
+            provider: OrderItemProvider::class
         )
     ],
 )]

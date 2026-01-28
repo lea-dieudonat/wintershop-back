@@ -51,7 +51,7 @@ final class OrderCancellationProcessor implements ProcessorInterface
 
         // Check if the order is in a cancellable state
         try {
-            $order->canRequestCancellation();
+            $order->assertCanRequestCancellation();
         } catch (OrderNotCancellableException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }

@@ -6,6 +6,7 @@ use App\Constant\Route;
 use App\Entity\Cart;
 use App\Entity\User;
 use App\Entity\Address;
+use App\Enum\ShippingMethod;
 use App\Service\CartService;
 use App\Service\CheckoutService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -100,7 +101,8 @@ class CheckoutController extends AbstractController
             $order = $this->checkoutService->createOrderFromCart(
                 $cart,
                 $shippingAddress,
-                $billingAddress
+                $billingAddress,
+                ShippingMethod::STANDARD
             );
 
             // Clear the cart

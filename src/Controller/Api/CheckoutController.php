@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 
 #[Route('/api/checkout', name: 'api_checkout_')]
 class CheckoutController extends AbstractController
@@ -28,6 +29,7 @@ class CheckoutController extends AbstractController
         private AddressRepository $addressRepository,
         private EntityManagerInterface $entityManager,
         private Security $security,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -105,11 +107,20 @@ class CheckoutController extends AbstractController
 
             return $this->json($outputDto, Response::HTTP_CREATED);
         } catch (\RuntimeException $e) {
+            $this->logger->error('Checkout RuntimeException: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user' => $user->getUserIdentifier(),
+            ]);
             return $this->json(
                 ['error' => $e->getMessage()],
                 Response::HTTP_BAD_REQUEST
             );
         } catch (\Exception $e) {
+            $this->logger->error('Checkout Exception: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString(),
+                'user' => $user->getUserIdentifier(),
+            ]);
             return $this->json(
                 ['error' => 'An unexpected error occurred. Please try again later.'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -130,7 +141,7 @@ class CheckoutController extends AbstractController
             return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // In a real app, you'd verify the payment status via webhook
+        //TODO In a real app, you'd verify the payment status via webhook
         // For now, just return success with order info
         return $this->json([
             'message' => 'Payment successful!',

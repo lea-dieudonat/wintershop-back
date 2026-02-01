@@ -134,13 +134,6 @@ class CheckoutController extends AbstractController
     #[Route('/success/{orderId}', name: 'success', methods: ['GET'])]
     public function checkoutSuccess(int $orderId): JsonResponse
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->security->getUser();
-
-        if (!$user) {
-            return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
-        }
-
         //TODO In a real app, you'd verify the payment status via webhook
         // For now, just return success with order info
         return $this->json([
@@ -155,12 +148,6 @@ class CheckoutController extends AbstractController
     #[Route('/cancel/{orderId}', name: 'cancel', methods: ['GET'])]
     public function checkoutCancel(int $orderId): JsonResponse
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->security->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'User not authenticated'], Response::HTTP_UNAUTHORIZED);
-        }
-
         return $this->json([
             'message' => 'Payment cancelled.',
             'orderId' => $orderId,

@@ -9,6 +9,7 @@ use App\Entity\Address;
 use App\Entity\Product;
 use App\Entity\OrderItem;
 use App\Enum\OrderStatus;
+use App\Enum\ShippingMethod;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -56,6 +57,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             $order->setUser($user);
             $order->setShippingAddress($shippingAddress);
             $order->setBillingAddress($billingAddress);
+            $order->setShippingMethod(ShippingMethod::STANDARD);
 
             // Date de création aléatoire dans les 90 derniers jours
             $daysAgo = rand(0, 90);
@@ -125,6 +127,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         $order->setShippingAddress($shippingAddress);
         $order->setBillingAddress($billingAddress);
         $order->setStatus($status);
+        $order->setShippingMethod(ShippingMethod::STANDARD);
 
         // Create at specific times to avoid cancellation issues
         $baseDate = new DateTimeImmutable('-30 days');

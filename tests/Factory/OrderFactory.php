@@ -4,6 +4,7 @@ namespace App\Tests\Factory;
 
 use App\Entity\Order;
 use App\Enum\OrderStatus;
+use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -24,6 +25,7 @@ final class OrderFactory extends PersistentProxyObjectFactory
             'billingAddress' => AddressFactory::new(),
             'status' => OrderStatus::PENDING,
             'totalAmount' => (string) self::faker()->randomFloat(2, 10, 1000),
+            'shippingMethod' => ShippingMethod::STANDARD,
         ];
     }
 }

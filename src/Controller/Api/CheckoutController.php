@@ -127,30 +127,4 @@ class CheckoutController extends AbstractController
             );
         }
     }
-
-    /**
-     * Success callback after payment
-     */
-    #[Route('/success/{orderId}', name: 'success', methods: ['GET'])]
-    public function checkoutSuccess(int $orderId): JsonResponse
-    {
-        //TODO In a real app, you'd verify the payment status via webhook
-        // For now, just return success with order info
-        return $this->json([
-            'message' => 'Payment successful!',
-            'orderId' => $orderId,
-        ]);
-    }
-
-    /**
-     * Cancel callback after payment
-     */
-    #[Route('/cancel/{orderId}', name: 'cancel', methods: ['GET'])]
-    public function checkoutCancel(int $orderId): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Payment cancelled.',
-            'orderId' => $orderId,
-        ], Response::HTTP_OK);
-    }
 }

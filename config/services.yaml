@@ -7,6 +7,7 @@
 parameters:
     stripe.public_key: "%env(STRIPE_PUBLIC_KEY)%"
     stripe.webhook_secret: "%env(STRIPE_WEBHOOK_SECRET)%"
+    app.frontend_url: "%env(APP_FRONTEND_URL)%"
 
 services:
     # default configuration for services in *this* file
@@ -34,6 +35,7 @@ services:
     App\Service\StripePaymentService:
         arguments:
             $stripePublicKey: "%stripe.public_key%"
+            $frontendUrl: "%app.frontend_url%"
 
     App\Controller\Api\StripeWebhookController:
         arguments:

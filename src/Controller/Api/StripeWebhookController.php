@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Order;
 use App\Enum\OrderStatus;
 use App\Repository\OrderRepository;
 use App\Service\CheckoutService;

@@ -12,7 +12,8 @@ class StripePaymentService
     public function __construct(
         private StripeClient $stripeClient,
         private UrlGeneratorInterface $urlGenerator,
-        private string $stripePublicKey
+        private string $stripePublicKey,
+        private string $frontendUrl
     ) {}
 
     /**
@@ -26,16 +27,8 @@ class StripePaymentService
             'payment_method_types' => ['card'],
             'line_items' => $lineItems,
             'mode' => 'payment',
-            'success_url' => $this->urlGenerator->generate(
-                'api_checkout_success',
-                ['orderId' => $order->getId()],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ) . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => $this->urlGenerator->generate(
-                'api_checkout_cancel',
-                ['orderId' => $order->getId()],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
+            'success_url' => $this->frontendUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $this->frontendUrl . '/checkout/cancel',
             'client_reference_id' => (string)$order->getId(),
             'customer_email' => $order->getUser()->getEmail(),
             'metadata' => [

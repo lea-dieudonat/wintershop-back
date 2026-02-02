@@ -40,6 +40,11 @@ class AddressProvider implements ProviderInterface
                 return null;
             }
 
+            // For DELETE operations, return the entity, not the DTO
+            if ($operation instanceof \ApiPlatform\Metadata\Delete) {
+                return $address;
+            }
+
             return $this->transformToDto($address);
         }
 

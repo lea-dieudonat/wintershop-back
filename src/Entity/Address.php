@@ -27,7 +27,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(),
         new Put(),
         new Patch(),
-        new Delete(),
+        new Delete(
+            security: "is_granted('ROLE_USER') and object.getUser() == user",
+        ),
     ],
     input: AddressInputDto::class,
     output: AddressOutputDto::class,

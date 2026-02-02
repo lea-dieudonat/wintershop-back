@@ -30,6 +30,21 @@ class AddressProcessor implements ProcessorInterface
             throw new AccessDeniedHttpException('User not authenticated.');
         }
 
+        // DELETE
+        if ($operation instanceof \ApiPlatform\Metadata\Delete) {
+            if (!$data instanceof Address) {
+                throw new \InvalidArgumentException('Expected Address entity for delete operation');
+            }
+
+            if ($data->getUser() !== $user) {
+                throw new AccessDeniedHttpException('You do not have permission to delete this address.');
+            }
+
+            $this->entityManager->remove($data);
+            $this->entityManager->flush();
+            return null;
+        }
+
         assert($data instanceof AddressInputDto);
 
         // POST
@@ -57,17 +72,6 @@ class AddressProcessor implements ProcessorInterface
             }
             $this->entityManager->flush();
             return $this->provider->transformToDto($address);
-        }
-
-        // DELETE
-        if ($operation instanceof \ApiPlatform\Metadata\Delete) {
-            $address = $this->addressRepository->find($uriVariables['id']);
-            if (!$address || $address->getUser() !== $user) {
-                throw new AccessDeniedHttpException('You do not have permission to delete this address.');
-            }
-            $this->entityManager->remove($address);
-            $this->entityManager->flush();
-            return null;
         }
         return null;
     }

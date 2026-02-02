@@ -89,13 +89,6 @@ class CheckoutController extends AbstractController
             $order->setStripeSessionId($checkoutSession->id);
             $this->entityManager->flush();
 
-            // Clear cart after successful order creation
-            foreach ($cart->getItems() as $item) {
-                $this->entityManager->remove($item);
-            }
-            $cart->setTotalPrice('0.00');
-            $this->entityManager->flush();
-
             // Return session ID to frontend
             $outputDto = new CheckoutSessionOutputDto(
                 sessionId: $checkoutSession->id,

@@ -114,6 +114,15 @@ class StripeWebhookController extends AbstractController
             // Decrement stock
             $this->checkoutService->decrementStock($order);
 
+            // Clear user's cart
+            $cart = $order->getUser()->getCart();
+            if ($cart) {
+                foreach ($cart->getItems() as $item) {
+                    $this->entityManager->remove($item);
+                }
+                $cart->setTotalPrice('0.00');
+            }
+
             $this->entityManager->flush();
 
             $this->logger->info('Stripe: Order marked as paid and stock decremented', [

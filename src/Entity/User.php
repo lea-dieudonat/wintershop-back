@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use App\Dto\User\UserInputDto;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\Patch;
 use App\Dto\User\UserOutputDto;
 use App\State\UserStateProvider;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\Collection;
@@ -22,11 +25,18 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             uriTemplate: '/users/{id}',
             security: "is_granted('ROLE_USER') or object == user",
             securityMessage: 'You do not have access to this resource.'
+        ),
+        new Patch(
+            uriTemplate: '/users/{id}',
+            security: "is_granted('ROLE_USER') or object == user",
+            securityMessage: 'You do not have access to this resource.',
+            input: UserInputDto::class
         )
     ],
     normalizationContext: ['groups' => ['user:read']],
     output: UserOutputDto::class,
     provider: UserStateProvider::class,
+    processor: UserStateProcessor::class,
 )]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface

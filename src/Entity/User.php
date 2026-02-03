@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
 use App\Dto\User\UserInputDto;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
@@ -11,7 +12,9 @@ use App\State\UserStateProvider;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
+use App\Dto\ChangePasswordInputDto;
 use ApiPlatform\Metadata\ApiResource;
+use App\State\ChangePasswordProcessor;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -31,6 +34,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             security: "is_granted('ROLE_USER') or object == user",
             securityMessage: 'You do not have access to this resource.',
             input: UserInputDto::class
+        ),
+        new Post(
+            uriTemplate: '/users/{id}/change-password',
+            security: "is_granted('ROLE_USER') or object == user",
+            securityMessage: 'You do not have access to this resource.',
+            input: ChangePasswordInputDto::class,
+            processor: ChangePasswordProcessor::class
         )
     ],
     normalizationContext: ['groups' => ['user:read']],

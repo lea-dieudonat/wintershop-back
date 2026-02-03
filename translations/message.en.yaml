@@ -1,34 +1,34 @@
 # Order statuses
 order:
-  status:
-    pending: "Pending payment"
-    paid: "Paid"
-    shipped: "Shipped"
-    delivered: "Delivered"
-    cancelled: "Cancelled"
+    status:
+        pending: "Pending payment"
+        paid: "Paid"
+        shipped: "Shipped"
+        delivered: "Delivered"
+        cancelled: "Cancelled"
 
 # Transition messages
 order_transition:
-  success:
-    paid: "Order has been marked as paid"
-    shipped: "Order has been shipped"
-    delivered: "Order has been delivered"
-    cancelled: "Order has been cancelled"
-  error:
-    invalid_transition: "Cannot transition from \"%current%\" to \"%new%\""
-    not_cancellable: "This order can no longer be cancelled"
+    success:
+        paid: "Order has been marked as paid"
+        shipped: "Order has been shipped"
+        delivered: "Order has been delivered"
+        cancelled: "Order has been cancelled"
+    error:
+        invalid_transition: 'Cannot transition from "%current%" to "%new%"'
+        not_cancellable: "This order can no longer be cancelled"
 
 # Product statuses
 product:
-  status:
-    draft: "Draft"
-    active: "On sale"
-    out_of_stock: "Out of stock"
-    archived: "Archived"
+    status:
+        draft: "Draft"
+        active: "On sale"
+        out_of_stock: "Out of stock"
+        archived: "Archived"
 
 # Validation errors
 validation:
-  positive_quantity: "Quantity must be at least 1"
-  positive_price: "Price must be positive"
-  valid_postal_code: "Postal code must contain 5 digits"
-  stock_insufficient: "Insufficient stock (available: %available%)"
+    positive_quantity: "Quantity must be at least 1"
+    positive_price: "Price must be positive"
+    valid_postal_code: "Postal code must contain 5 digits"
+    stock_insufficient: "Insufficient stock (available: %available%)"

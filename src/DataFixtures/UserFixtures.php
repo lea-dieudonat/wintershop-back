@@ -48,7 +48,7 @@ class UserFixtures extends Fixture
                 $data['firstName'],
                 $data['lastName'],
                 ['ROLE_USER'],
-                'password123',
+                'Password123',
                 'user_regular_' . ($idx + 1)
             );
         }

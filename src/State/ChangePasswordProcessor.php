@@ -4,7 +4,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Dto\ChangePasswordInputDto;
+use App\Dto\Security\ChangePasswordInputDto;
 use App\Entity\User;
 use App\Mapper\UserMapper;
 use Doctrine\ORM\EntityManagerInterface;

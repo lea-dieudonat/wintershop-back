@@ -12,7 +12,7 @@ use App\State\UserStateProvider;
 use Doctrine\ORM\Mapping as ORM;
 use App\State\UserStateProcessor;
 use App\Repository\UserRepository;
-use App\Dto\ChangePasswordInputDto;
+use App\Dto\Security\ChangePasswordInputDto;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\ChangePasswordProcessor;
 use Doctrine\Common\Collections\Collection;

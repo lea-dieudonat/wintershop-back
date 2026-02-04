@@ -128,6 +128,13 @@ class Product
     #[Groups(['product:read', 'product:write'])]
     private bool $isActive = true;
 
+    /**
+     * Indique si le produit est mis en avant sur la page d'accueil
+     */
+    #[ORM\Column(options: ['default' => false])]
+    #[Groups(['product:read'])]
+    private ?bool $isFeatured = false;
+
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
@@ -278,6 +285,17 @@ class Product
     {
         $this->isActive = $isActive;
 
+        return $this;
+    }
+
+    public function isFeatured(): ?bool
+    {
+        return $this->isFeatured;
+    }
+
+    public function setIsFeatured(bool $isFeatured): static
+    {
+        $this->isFeatured = $isFeatured;
         return $this;
     }
 

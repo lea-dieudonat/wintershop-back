@@ -4,7 +4,7 @@ namespace App\Dto\Product;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\State\FeaturedProductsProvider;
+use App\State\Product\FeaturedProductsProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 

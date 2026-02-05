@@ -1,6 +1,6 @@
 <?php
 
-namespace App\State;
+namespace App\State\Address;
 
 use ApiPlatform\Metadata\Operation;
 use Symfony\Bundle\SecurityBundle\Security;

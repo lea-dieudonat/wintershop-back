@@ -1,6 +1,6 @@
 <?php
 
-namespace App\State;
+namespace App\State\Cart;
 
 use App\Service\CartService;
 use InvalidArgumentException;

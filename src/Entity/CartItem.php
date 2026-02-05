@@ -7,7 +7,7 @@ use App\Dto\Cart\CartItemInputDto;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
-use App\State\CartItemProcessor;
+use App\State\Cart\CartItemProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CartItemRepository;

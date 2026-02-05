@@ -8,15 +8,16 @@ use App\Dto\User\UserInputDto;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use App\Dto\User\UserOutputDto;
-use App\State\UserStateProvider;
+use App\State\User\UserStateProvider;
 use Doctrine\ORM\Mapping as ORM;
-use App\State\UserStateProcessor;
+use App\State\User\UserStateProcessor;
 use App\Repository\UserRepository;
 use App\Dto\Security\ChangePasswordInputDto;
 use ApiPlatform\Metadata\ApiResource;
-use App\State\ChangePasswordProcessor;
+use App\State\User\ChangePasswordProcessor;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -80,6 +81,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $orders;
 
     /**
+     * Produits dans la wishlist de l'utilisateur
+     * @var Collection<int, Product>
+     */
+    #[ORM\ManyToMany(targetEntity: Product::class)]
+    #[ORM\JoinTable(name: 'user_wishlist_product')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'product_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private Collection $wishlist;
+
+    /**
      * @var Collection<int, Address>
      */
     #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'user')]
@@ -105,6 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->orders = new ArrayCollection();
+        $this->wishlist = new ArrayCollection();
         $this->addresses = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->roles = ['ROLE_USER'];
@@ -314,5 +326,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getWishlist(): Collection
+    {
+        return $this->wishlist;
+    }
+
+    public function addToWishlist(Product $product): static
+    {
+        if (!$this->wishlist->contains($product)) {
+            $this->wishlist->add($product);
+        }
+
+        return $this;
+    }
+
+    public function removeFromWishlist(Product $product): static
+    {
+        $this->wishlist->removeElement($product);
+
+        return $this;
+    }
+
+    public function isInWishlist(Product $product): bool
+    {
+        return $this->wishlist->contains($product);
     }
 }

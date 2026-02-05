@@ -1,6 +1,6 @@
 <?php
 
-namespace App\State;
+namespace App\State\Order;
 
 use DateTimeImmutable;
 use App\Enum\OrderStatus;

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\State;
+namespace App\State\Address;
 
 use App\Entity\User;
 use App\Entity\Address;
-use App\State\AddressProvider;
+use App\State\Address\AddressProvider;
 use ApiPlatform\Metadata\Operation;
 use App\Dto\Address\AddressInputDto;
 use App\Dto\Address\AddressOutputDto;

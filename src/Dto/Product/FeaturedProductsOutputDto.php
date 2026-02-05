@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Product\Dto;
+namespace App\Dto\Product;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;

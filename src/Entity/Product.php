@@ -44,6 +44,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     'description' => 'partial',
     'category' => 'exact',
     'category.slug' => 'exact',
+    'isActive' => 'exact',
+    'isFeatured' => 'exact',
 ])]
 #[ApiFilter(RangeFilter::class, properties: ['price', 'stock'])]
 #[ApiFilter(OrderFilter::class, properties: [

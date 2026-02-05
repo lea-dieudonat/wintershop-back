@@ -2,40 +2,11 @@
 
 namespace App\Entity;
 
-use App\Dto\Cart\CartOutputDto;
-use App\Dto\Cart\CartItemInputDto;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
-use App\State\Cart\CartItemProcessor;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CartItemRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CartItemRepository::class)]
-#[ApiResource(
-    operations: [
-        new Post(
-            uriTemplate: '/cart/items',
-            output: CartOutputDto::class,
-            security: "is_granted('ROLE_USER')",
-        ),
-        new Patch(
-            uriTemplate: '/cart/items/{id}',
-            output: CartOutputDto::class,
-            security: "is_granted('ROLE_USER')",
-            inputFormats: ['json' => ['application/json']],
-        ),
-        new Delete(
-            uriTemplate: '/cart/items/{id}',
-            output: CartOutputDto::class,
-            security: "is_granted('ROLE_USER')",
-        ),
-    ],
-    input: CartItemInputDto::class,
-    processor: CartItemProcessor::class,
-)]
 #[ORM\HasLifecycleCallbacks]
 class CartItem
 {

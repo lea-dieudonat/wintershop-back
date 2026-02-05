@@ -2,41 +2,13 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Post;
-use App\State\Address\AddressProvider;
 use Doctrine\DBAL\Types\Types;
-use ApiPlatform\Metadata\Patch;
-use App\State\Address\AddressProcessor;
-use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
-use App\Dto\Address\AddressInputDto;
-use ApiPlatform\Metadata\ApiResource;
-use App\Dto\Address\AddressOutputDto;
 use App\Repository\AddressRepository;
-use ApiPlatform\Metadata\GetCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
-        new Delete(
-            security: "is_granted('ROLE_USER') and object.getUser() == user",
-        ),
-    ],
-    input: AddressInputDto::class,
-    output: AddressOutputDto::class,
-    provider: AddressProvider::class,
-    processor: AddressProcessor::class,
-    security: "is_granted('ROLE_USER')"
-)]
 #[ORM\HasLifecycleCallbacks]
 class Address
 {

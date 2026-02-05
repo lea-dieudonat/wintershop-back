@@ -2,19 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use App\Dto\User\UserInputDto;
 use Doctrine\DBAL\Types\Types;
-use ApiPlatform\Metadata\Patch;
-use App\Dto\User\UserOutputDto;
-use App\State\User\UserStateProvider;
 use Doctrine\ORM\Mapping as ORM;
-use App\State\User\UserStateProcessor;
 use App\Repository\UserRepository;
-use App\Dto\Security\ChangePasswordInputDto;
-use ApiPlatform\Metadata\ApiResource;
-use App\State\User\ChangePasswordProcessor;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -23,32 +13,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(
-            uriTemplate: '/users/{id}',
-            security: "is_granted('ROLE_USER') or object == user",
-            securityMessage: 'You do not have access to this resource.'
-        ),
-        new Patch(
-            uriTemplate: '/users/{id}',
-            security: "is_granted('ROLE_USER') or object == user",
-            securityMessage: 'You do not have access to this resource.',
-            input: UserInputDto::class
-        ),
-        new Post(
-            uriTemplate: '/users/{id}/change-password',
-            security: "is_granted('ROLE_USER') or object == user",
-            securityMessage: 'You do not have access to this resource.',
-            input: ChangePasswordInputDto::class,
-            processor: ChangePasswordProcessor::class
-        )
-    ],
-    normalizationContext: ['groups' => ['user:read']],
-    output: UserOutputDto::class,
-    provider: UserStateProvider::class,
-    processor: UserStateProcessor::class,
-)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

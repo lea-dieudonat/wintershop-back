@@ -2,36 +2,14 @@
 
 namespace App\Entity;
 
-use App\State\Cart\CartProvider;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use App\State\Cart\CartProcessor;
 use Doctrine\DBAL\Types\Types;
-use App\Dto\Cart\CartOutputDto;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CartRepository;
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(
-            uriTemplate: '/cart',
-            security: "is_granted('ROLE_USER')",
-        ),
-        new Delete(
-            uriTemplate: '/cart',
-            output: CartOutputDto::class,
-            security: "is_granted('ROLE_USER')",
-            processor: CartProcessor::class,
-        ),
-    ],
-    output: CartOutputDto::class,
-    provider: CartProvider::class,
-)]
 #[ORM\HasLifecycleCallbacks]
 class Cart
 {

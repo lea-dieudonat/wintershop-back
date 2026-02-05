@@ -3,7 +3,32 @@
 namespace App\Dto\Address;
 
 use DateTimeImmutable;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use App\State\Address\AddressProvider;
+use App\State\Address\AddressProcessor;
 
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete(
+            security: "is_granted('ROLE_USER')"
+        ),
+    ],
+    input: AddressInputDto::class,
+    provider: AddressProvider::class,
+    processor: AddressProcessor::class,
+    security: "is_granted('ROLE_USER')",
+)]
 readonly class AddressOutputDto
 {
     public function __construct(

@@ -5,21 +5,9 @@ namespace App\Entity;
 use DateTimeImmutable;
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
-use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\OrderRepository;
-use App\State\Order\OrderRefundProcessor;
-use ApiPlatform\Metadata\ApiResource;
-use App\Dto\Order\OrderCancelInputDto;
-use App\Dto\Order\OrderRefundInputDto;
-use ApiPlatform\Metadata\GetCollection;
-use App\Dto\Order\OrderDetailOutputDto;
-use App\State\Order\OrderCancellationProcessor;
-use App\State\Order\OrderCollectionProvider;
-use App\State\Order\OrderItemProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Exception\OrderNotRefundableException;
 use App\Exception\OrderNotCancellableException;
@@ -29,38 +17,6 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ApiResource(
-    operations: [
-        new GetCollection(
-            uriTemplate: '/orders',
-            security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['order:list']],
-            provider: OrderCollectionProvider::class
-        ),
-        new Get(
-            uriTemplate: '/orders/{id}',
-            security: "is_granted('ROLE_USER') and object.getUser() == user",
-            normalizationContext: ['groups' => ['order:detail']],
-            provider: OrderItemProvider::class
-        ),
-        new Patch(
-            uriTemplate: '/orders/{id}/cancel',
-            security: "is_granted('ROLE_USER') and object.getUser() == user",
-            input: OrderCancelInputDto::class,
-            output: OrderDetailOutputDto::class,
-            processor: OrderCancellationProcessor::class,
-            provider: OrderItemProvider::class,
-            inputFormats: ['json' => ['application/json']],
-        ),
-        new Post(
-            uriTemplate: '/orders/{id}/refund',
-            security: "is_granted('ROLE_USER') and object.getUser() == user",
-            input: OrderRefundInputDto::class,
-            processor: OrderRefundProcessor::class,
-            provider: OrderItemProvider::class
-        )
-    ],
-)]
 #[ORM\Table(name: '`order`')]
 #[UniqueEntity('email')]
 #[ORM\HasLifecycleCallbacks]

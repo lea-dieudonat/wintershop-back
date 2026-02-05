@@ -30,13 +30,15 @@ use App\State\User\UserWishlistProvider;
             uriTemplate: '/wishlist/{productId}',
             processor: AddToWishlistProcessor::class,
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['product:read']]
+            normalizationContext: ['groups' => ['product:read']],
+            deserialize: false
         ),
         new Delete(
             uriTemplate: '/wishlist/{productId}',
             processor: RemoveFromWishlistProcessor::class,
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['product:read']]
+            normalizationContext: ['groups' => ['product:read']],
+            deserialize: false
         ),
     ]
 )]

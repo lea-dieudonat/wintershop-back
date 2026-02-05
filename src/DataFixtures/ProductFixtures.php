@@ -22,6 +22,15 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             throw new \RuntimeException('Failed to parse products.json: ' . json_last_error_msg());
         }
 
+        // Map category slugs to image files
+        $categoryImages = [
+            'skis' => 'ski.jpg',
+            'snowboards' => 'snowboard.avif',
+            'boots' => 'boots.jpg',
+            'clothing' => 'clothing.jpg',
+            'accessories' => 'accessories.jpg',
+        ];
+
         foreach ($products as $productData) {
             $product = new Product();
             // Set default name/description (French as fallback for old data)
@@ -30,6 +39,12 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             $product->setPrice($productData['price']);
             $product->setStock($productData['stock']);
             $product->setIsActive($productData['isActive']);
+
+            // Set image URL based on category (filename only, front-end will handle the path)
+            $categorySlug = $productData['category'];
+            if (isset($categoryImages[$categorySlug])) {
+                $product->setImageUrl($categoryImages[$categorySlug]);
+            }
 
             // Randomly feature ~20% of active products
             if ($productData['isActive'] && rand(1, 100) <= 20) {

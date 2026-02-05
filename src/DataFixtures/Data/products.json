@@ -238,5 +238,1125 @@
     "stock": 0,
     "category": "skis",
     "isActive": false
+  },
+  {
+    "name": {
+      "fr": "Ski Randonnée TourLite",
+      "en": "Touring Ski TourLite",
+      "es": "Esquí de Travesía TourLite"
+    },
+    "description": {
+      "fr": "Ski léger pour la randonnée alpine. Peaux de phoque incluses.",
+      "en": "Lightweight ski for alpine touring. Climbing skins included.",
+      "es": "Esquí ligero para travesía alpina. Pieles de foca incluidas."
+    },
+    "price": "679.99",
+    "stock": 10,
+    "category": "skis",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Ski Racing Competition GS",
+      "en": "Racing Ski Competition GS",
+      "es": "Esquí de Competición GS"
+    },
+    "description": {
+      "fr": "Ski de compétition géant slalom. Pour les coureurs confirmés.",
+      "en": "Giant slalom competition ski. For experienced racers.",
+      "es": "Esquí de competición gigante slalom. Para corredores experimentados."
+    },
+    "price": "899.99",
+    "stock": 5,
+    "category": "skis",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Ski Femme Crystal Light",
+      "en": "Women's Ski Crystal Light",
+      "es": "Esquí Mujer Crystal Light"
+    },
+    "description": {
+      "fr": "Ski spécialement conçu pour les femmes. Léger et maniable.",
+      "en": "Ski specially designed for women. Light and maneuverable.",
+      "es": "Esquí especialmente diseñado para mujeres. Ligero y manejable."
+    },
+    "price": "529.99",
+    "stock": 18,
+    "category": "skis",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Ski Enfant Junior Pro",
+      "en": "Kids Ski Junior Pro",
+      "es": "Esquí Niños Junior Pro"
+    },
+    "description": {
+      "fr": "Ski pour enfants de 8 à 12 ans. Facile à contrôler.",
+      "en": "Ski for children aged 8 to 12. Easy to control.",
+      "es": "Esquí para niños de 8 a 12 años. Fácil de controlar."
+    },
+    "price": "249.99",
+    "stock": 32,
+    "category": "skis",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Ski Freeride BackCountry",
+      "en": "Freeride Ski BackCountry",
+      "es": "Esquí Freeride BackCountry"
+    },
+    "description": {
+      "fr": "Large ski pour le hors-piste. Rocker prononcé pour la poudreuse.",
+      "en": "Wide ski for off-piste. Pronounced rocker for powder.",
+      "es": "Esquí ancho para fuera de pista. Rocker pronunciado para nieve polvo."
+    },
+    "price": "729.99",
+    "stock": 7,
+    "category": "skis",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Snowboard Freestyle Jib Master",
+      "en": "Freestyle Snowboard Jib Master",
+      "es": "Tabla Freestyle Jib Master"
+    },
+    "description": {
+      "fr": "Planche twin pour le park. Flex souple pour les tricks.",
+      "en": "Twin board for park. Soft flex for tricks.",
+      "es": "Tabla twin para parque. Flex suave para trucos."
+    },
+    "price": "419.99",
+    "stock": 14,
+    "category": "snowboards",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Snowboard Femme LadyRide",
+      "en": "Women's Snowboard LadyRide",
+      "es": "Tabla Mujer LadyRide"
+    },
+    "description": {
+      "fr": "Planche spécialement conçue pour les femmes. Design élégant.",
+      "en": "Board specially designed for women. Elegant design.",
+      "es": "Tabla especialmente diseñada para mujeres. Diseño elegante."
+    },
+    "price": "459.99",
+    "stock": 11,
+    "category": "snowboards",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Snowboard Split Alpine Explorer",
+      "en": "Splitboard Alpine Explorer",
+      "es": "Splitboard Alpine Explorer"
+    },
+    "description": {
+      "fr": "Splitboard pour la randonnée. Se divise en deux skis de montée.",
+      "en": "Splitboard for touring. Splits into two climbing skis.",
+      "es": "Splitboard para travesía. Se divide en dos esquís de subida."
+    },
+    "price": "799.99",
+    "stock": 4,
+    "category": "snowboards",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Snowboard Enfant Kidz Fun",
+      "en": "Kids Snowboard Kidz Fun",
+      "es": "Tabla Niños Kidz Fun"
+    },
+    "description": {
+      "fr": "Planche pour enfants débutants. Très tolérante et stable.",
+      "en": "Board for beginner kids. Very forgiving and stable.",
+      "es": "Tabla para niños principiantes. Muy tolerante y estable."
+    },
+    "price": "199.99",
+    "stock": 28,
+    "category": "snowboards",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Snowboard Carving SpeedDemon",
+      "en": "Carving Snowboard SpeedDemon",
+      "es": "Tabla Carving SpeedDemon"
+    },
+    "description": {
+      "fr": "Planche directionnelle pour le carving. Cambre classique.",
+      "en": "Directional board for carving. Classic camber.",
+      "es": "Tabla direccional para carving. Camber clásico."
+    },
+    "price": "589.99",
+    "stock": 9,
+    "category": "snowboards",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussures de Ski Confort SoftStep",
+      "en": "Comfort Ski Boots SoftStep",
+      "es": "Botas de Esquí Confort SoftStep"
+    },
+    "description": {
+      "fr": "Chaussures souples pour débutants. Flex 80. Faciles à enfiler.",
+      "en": "Soft boots for beginners. Flex 80. Easy to put on.",
+      "es": "Botas suaves para principiantes. Flex 80. Fáciles de poner."
+    },
+    "price": "289.99",
+    "stock": 26,
+    "category": "boots",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussures de Ski Femme FitPerfect",
+      "en": "Women's Ski Boots FitPerfect",
+      "es": "Botas de Esquí Mujer FitPerfect"
+    },
+    "description": {
+      "fr": "Chaussures adaptées à la morphologie féminine. Flex 100.",
+      "en": "Boots adapted to female morphology. Flex 100.",
+      "es": "Botas adaptadas a la morfología femenina. Flex 100."
+    },
+    "price": "369.99",
+    "stock": 21,
+    "category": "boots",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussures de Ski Randonnée TourPro",
+      "en": "Ski Touring Boots TourPro",
+      "es": "Botas de Esquí de Travesía TourPro"
+    },
+    "description": {
+      "fr": "Légères avec mode marche. Idéales pour la randonnée alpine.",
+      "en": "Lightweight with walk mode. Ideal for alpine touring.",
+      "es": "Ligeras con modo caminar. Ideales para travesía alpina."
+    },
+    "price": "499.99",
+    "stock": 13,
+    "category": "boots",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussures de Snowboard Rigide AlpineRide",
+      "en": "Stiff Snowboard Boots AlpineRide",
+      "es": "Botas de Snowboard Rígidas AlpineRide"
+    },
+    "description": {
+      "fr": "Bottes rigides pour le carving. Réponse immédiate.",
+      "en": "Stiff boots for carving. Immediate response.",
+      "es": "Botas rígidas para carving. Respuesta inmediata."
+    },
+    "price": "379.99",
+    "stock": 15,
+    "category": "boots",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussures de Snowboard Femme StyleRide",
+      "en": "Women's Snowboard Boots StyleRide",
+      "es": "Botas de Snowboard Mujer StyleRide"
+    },
+    "description": {
+      "fr": "Bottes confortables avec design moderne. Lacets classiques.",
+      "en": "Comfortable boots with modern design. Classic laces.",
+      "es": "Botas cómodas con diseño moderno. Cordones clásicos."
+    },
+    "price": "319.99",
+    "stock": 19,
+    "category": "boots",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Veste de Snowboard StreetStyle",
+      "en": "Snowboard Jacket StreetStyle",
+      "es": "Chaqueta de Snowboard StreetStyle"
+    },
+    "description": {
+      "fr": "Style streetwear. Imperméable 15000mm. Nombreuses poches.",
+      "en": "Streetwear style. 15000mm waterproof. Many pockets.",
+      "es": "Estilo urbano. Impermeabilidad 15000mm. Muchos bolsillos."
+    },
+    "price": "249.99",
+    "stock": 24,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Veste de Ski Femme EleganceWarm",
+      "en": "Women's Ski Jacket EleganceWarm",
+      "es": "Chaqueta de Esquí Mujer EleganceWarm"
+    },
+    "description": {
+      "fr": "Coupe ajustée et élégante. Isolation synthétique premium.",
+      "en": "Fitted and elegant cut. Premium synthetic insulation.",
+      "es": "Corte ajustado y elegante. Aislamiento sintético premium."
+    },
+    "price": "299.99",
+    "stock": 27,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Veste de Ski Enfant ColorKidz",
+      "en": "Kids Ski Jacket ColorKidz",
+      "es": "Chaqueta de Esquí Niños ColorKidz"
+    },
+    "description": {
+      "fr": "Veste chaude et colorée pour enfants. Capuche amovible.",
+      "en": "Warm and colorful jacket for kids. Removable hood.",
+      "es": "Chaqueta cálida y colorida para niños. Capucha removible."
+    },
+    "price": "129.99",
+    "stock": 42,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Pantalon de Snowboard BaggyStyle",
+      "en": "Snowboard Pants BaggyStyle",
+      "es": "Pantalón de Snowboard BaggyStyle"
+    },
+    "description": {
+      "fr": "Coupe baggy tendance. Ventilations latérales zippées.",
+      "en": "Trendy baggy fit. Zippered side ventilations.",
+      "es": "Corte holgado de moda. Ventilaciones laterales con cremallera."
+    },
+    "price": "169.99",
+    "stock": 31,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Pantalon de Ski Femme SlimFit",
+      "en": "Women's Ski Pants SlimFit",
+      "es": "Pantalón de Esquí Mujer SlimFit"
+    },
+    "description": {
+      "fr": "Coupe slim flatteuse. Stretch 4 directions pour le confort.",
+      "en": "Flattering slim fit. 4-way stretch for comfort.",
+      "es": "Corte slim favorecedor. Stretch en 4 direcciones para comodidad."
+    },
+    "price": "199.99",
+    "stock": 29,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Combinaison de Ski OnePiece Pro",
+      "en": "Ski Suit OnePiece Pro",
+      "es": "Traje de Esquí OnePiece Pro"
+    },
+    "description": {
+      "fr": "Combinaison une pièce pour protection maximale. Imperméable 25000mm.",
+      "en": "One-piece suit for maximum protection. 25000mm waterproof.",
+      "es": "Traje de una pieza para máxima protección. Impermeabilidad 25000mm."
+    },
+    "price": "449.99",
+    "stock": 8,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Polaire Technique FleeceWarm",
+      "en": "Technical Fleece FleeceWarm",
+      "es": "Forro Polar Técnico FleeceWarm"
+    },
+    "description": {
+      "fr": "Polaire respirante et chaude. Parfaite comme couche intermédiaire.",
+      "en": "Breathable and warm fleece. Perfect as mid-layer.",
+      "es": "Polar transpirable y cálido. Perfecto como capa intermedia."
+    },
+    "price": "79.99",
+    "stock": 55,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Doudoune Sans Manches WarmCore",
+      "en": "Sleeveless Down Jacket WarmCore",
+      "es": "Chaleco de Plumas WarmCore"
+    },
+    "description": {
+      "fr": "Gilet en duvet 700. Chaud sans entraver les mouvements.",
+      "en": "700 down vest. Warm without restricting movement.",
+      "es": "Chaleco de plumón 700. Cálido sin restringir movimiento."
+    },
+    "price": "119.99",
+    "stock": 38,
+    "category": "clothing",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Bonnet Laine Mérinos WoolWarm",
+      "en": "Merino Wool Beanie WoolWarm",
+      "es": "Gorro Lana Merino WoolWarm"
+    },
+    "description": {
+      "fr": "Bonnet en laine mérinos naturelle. Doux et respirant.",
+      "en": "Natural merino wool beanie. Soft and breathable.",
+      "es": "Gorro de lana merino natural. Suave y transpirable."
+    },
+    "price": "29.99",
+    "stock": 75,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Tour de Cou NeckWarm",
+      "en": "Neck Warmer NeckWarm",
+      "es": "Braga de Cuello NeckWarm"
+    },
+    "description": {
+      "fr": "Tour de cou multifonction. Protection contre le froid et le vent.",
+      "en": "Multi-function neck warmer. Protection against cold and wind.",
+      "es": "Braga multiusos. Protección contra frío y viento."
+    },
+    "price": "19.99",
+    "stock": 85,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussettes de Ski Thermiques HeatSock",
+      "en": "Thermal Ski Socks HeatSock",
+      "es": "Calcetines de Esquí Térmicos HeatSock"
+    },
+    "description": {
+      "fr": "Chaussettes hautes avec renfort au niveau des tibias.",
+      "en": "High socks with shin reinforcement.",
+      "es": "Calcetines altos con refuerzo en espinillas."
+    },
+    "price": "24.99",
+    "stock": 90,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Lunettes de Soleil MountainView",
+      "en": "Sunglasses MountainView",
+      "es": "Gafas de Sol MountainView"
+    },
+    "description": {
+      "fr": "Lunettes catégorie 4 pour haute montagne. Protection UV totale.",
+      "en": "Category 4 glasses for high mountain. Total UV protection.",
+      "es": "Gafas categoría 4 para alta montaña. Protección UV total."
+    },
+    "price": "89.99",
+    "stock": 33,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Sac à Dos BackPack 30L",
+      "en": "Backpack 30L",
+      "es": "Mochila 30L"
+    },
+    "description": {
+      "fr": "Sac à dos technique avec poche à eau. Compartiment sécurité avalanche.",
+      "en": "Technical backpack with hydration pocket. Avalanche safety compartment.",
+      "es": "Mochila técnica con bolsillo de hidratación. Compartimento de seguridad avalanchas."
+    },
+    "price": "149.99",
+    "stock": 16,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Housse à Ski WheelBag",
+      "en": "Ski Bag WheelBag",
+      "es": "Funda de Esquís WheelBag"
+    },
+    "description": {
+      "fr": "Housse à roulettes pour 2 paires de skis. Rembourrée.",
+      "en": "Wheeled bag for 2 pairs of skis. Padded.",
+      "es": "Funda con ruedas para 2 pares de esquís. Acolchada."
+    },
+    "price": "99.99",
+    "stock": 22,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Fixations de Ski PowerBind",
+      "en": "Ski Bindings PowerBind",
+      "es": "Fijaciones de Esquí PowerBind"
+    },
+    "description": {
+      "fr": "Fixations DIN 6-14. Déclenchement multi-directionnel.",
+      "en": "DIN 6-14 bindings. Multi-directional release.",
+      "es": "Fijaciones DIN 6-14. Liberación multidireccional."
+    },
+    "price": "249.99",
+    "stock": 17,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Fixations de Snowboard FlexFit",
+      "en": "Snowboard Bindings FlexFit",
+      "es": "Fijaciones de Snowboard FlexFit"
+    },
+    "description": {
+      "fr": "Fixations ajustables avec système d'amortissement. Flex medium.",
+      "en": "Adjustable bindings with cushioning system. Medium flex.",
+      "es": "Fijaciones ajustables con sistema de amortiguación. Flex medio."
+    },
+    "price": "179.99",
+    "stock": 23,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Fart de Ski WaxPro",
+      "en": "Ski Wax WaxPro",
+      "es": "Cera de Esquí WaxPro"
+    },
+    "description": {
+      "fr": "Fart universel toutes températures. Kit complet avec fer.",
+      "en": "Universal all-temperature wax. Complete kit with iron.",
+      "es": "Cera universal para todas las temperaturas. Kit completo con plancha."
+    },
+    "price": "49.99",
+    "stock": 44,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "DVA Détecteur Avalanche SafeBeacon",
+      "en": "Avalanche Beacon SafeBeacon",
+      "es": "Detector de Avalanchas SafeBeacon"
+    },
+    "description": {
+      "fr": "ARVA 3 antennes. Portée 60m. Fonction recherche multiple.",
+      "en": "3-antenna beacon. 60m range. Multiple search function.",
+      "es": "Baliza 3 antenas. Alcance 60m. Función búsqueda múltiple."
+    },
+    "price": "299.99",
+    "stock": 12,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Pelle à Neige ProShovel",
+      "en": "Snow Shovel ProShovel",
+      "es": "Pala de Nieve ProShovel"
+    },
+    "description": {
+      "fr": "Pelle télescopique en aluminium. Légère et résistante.",
+      "en": "Telescopic aluminum shovel. Light and sturdy.",
+      "es": "Pala telescópica de aluminio. Ligera y resistente."
+    },
+    "price": "59.99",
+    "stock": 28,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Sonde à Avalanche ProbeMax",
+      "en": "Avalanche Probe ProbeMax",
+      "es": "Sonda de Avalanchas ProbeMax"
+    },
+    "description": {
+      "fr": "Sonde 320cm. Graduation tous les 10cm. Déploiement rapide.",
+      "en": "320cm probe. Markings every 10cm. Quick deployment.",
+      "es": "Sonda 320cm. Graduación cada 10cm. Despliegue rápido."
+    },
+    "price": "69.99",
+    "stock": 25,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Crampons à Neige IceGrip",
+      "en": "Snow Crampons IceGrip",
+      "es": "Crampones de Nieve IceGrip"
+    },
+    "description": {
+      "fr": "Crampons 10 pointes pour chaussures de randonnée. Anti-dérapant.",
+      "en": "10-point crampons for hiking boots. Anti-slip.",
+      "es": "Crampones 10 puntas para botas de senderismo. Antideslizante."
+    },
+    "price": "79.99",
+    "stock": 19,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Housse de Snowboard BoardSleeve",
+      "en": "Snowboard Bag BoardSleeve",
+      "es": "Funda de Snowboard BoardSleeve"
+    },
+    "description": {
+      "fr": "Housse rembourrée avec bandoulière. Protection optimale.",
+      "en": "Padded bag with shoulder strap. Optimal protection.",
+      "es": "Funda acolchada con correa de hombro. Protección óptima."
+    },
+    "price": "69.99",
+    "stock": 27,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Masque de Ski Photochromique AutoTint",
+      "en": "Photochromic Ski Goggles AutoTint",
+      "es": "Gafas de Esquí Fotocromáticas AutoTint"
+    },
+    "description": {
+      "fr": "Écran photochromique s'adaptant à la luminosité. Anti-buée premium.",
+      "en": "Photochromic lens adapting to light. Premium anti-fog.",
+      "es": "Lente fotocromática que se adapta a la luz. Antivaho premium."
+    },
+    "price": "199.99",
+    "stock": 14,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Gants de Ski Cuir LuxuryGlove",
+      "en": "Leather Ski Gloves LuxuryGlove",
+      "es": "Guantes de Esquí Cuero LuxuryGlove"
+    },
+    "description": {
+      "fr": "Gants en cuir premium. Doublure laine mérinos. Très chauds.",
+      "en": "Premium leather gloves. Merino wool lining. Very warm.",
+      "es": "Guantes de cuero premium. Forro de lana merino. Muy cálidos."
+    },
+    "price": "129.99",
+    "stock": 21,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Moufles de Ski ExtremeWarm",
+      "en": "Ski Mittens ExtremeWarm",
+      "es": "Manoplas de Esquí ExtremeWarm"
+    },
+    "description": {
+      "fr": "Moufles pour grand froid. Isolation Primaloft. Imperméables.",
+      "en": "Mittens for extreme cold. Primaloft insulation. Waterproof.",
+      "es": "Manoplas para frío extremo. Aislamiento Primaloft. Impermeables."
+    },
+    "price": "89.99",
+    "stock": 26,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Protection Dorsale BackShield",
+      "en": "Back Protector BackShield",
+      "es": "Protección Dorsal BackShield"
+    },
+    "description": {
+      "fr": "Protection dorsale certifiée. Légère et flexible.",
+      "en": "Certified back protector. Light and flexible.",
+      "es": "Protección dorsal certificada. Ligera y flexible."
+    },
+    "price": "119.99",
+    "stock": 15,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Short de Protection ImpactShort",
+      "en": "Impact Shorts ImpactShort",
+      "es": "Pantalón Corto de Protección ImpactShort"
+    },
+    "description": {
+      "fr": "Short de protection pour snowboard. Rembourrage aux hanches et coccyx.",
+      "en": "Protection shorts for snowboard. Padding on hips and tailbone.",
+      "es": "Pantalón corto de protección para snowboard. Acolchado en caderas y coxis."
+    },
+    "price": "69.99",
+    "stock": 24,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Protection Poignets WristGuard",
+      "en": "Wrist Guards WristGuard",
+      "es": "Protecciones de Muñeca WristGuard"
+    },
+    "description": {
+      "fr": "Protections de poignets pour snowboard. Réglables.",
+      "en": "Wrist guards for snowboard. Adjustable.",
+      "es": "Protecciones de muñeca para snowboard. Ajustables."
+    },
+    "price": "39.99",
+    "stock": 37,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Bandeau Cache-Oreilles EarWarm",
+      "en": "Ear Warmer Headband EarWarm",
+      "es": "Banda para Orejas EarWarm"
+    },
+    "description": {
+      "fr": "Bandeau en polaire pour protéger les oreilles. Léger et confortable.",
+      "en": "Fleece headband to protect ears. Light and comfortable.",
+      "es": "Banda de forro polar para proteger orejas. Ligera y cómoda."
+    },
+    "price": "14.99",
+    "stock": 68,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Cagoule IntégraleFace",
+      "en": "Full Face Balaclava IntégraleFace",
+      "es": "Pasamontañas IntégraleFace"
+    },
+    "description": {
+      "fr": "Cagoule couvre-visage complète. Coupe-vent et respirante.",
+      "en": "Full face balaclava. Windproof and breathable.",
+      "es": "Pasamontañas de cara completa. Cortaviento y transpirable."
+    },
+    "price": "24.99",
+    "stock": 45,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chauffe-Mains Réutilisable HotPack",
+      "en": "Reusable Hand Warmers HotPack",
+      "es": "Calentadores de Manos Reutilizables HotPack"
+    },
+    "description": {
+      "fr": "Lot de 2 chauffe-mains réutilisables. Activation par pression.",
+      "en": "Set of 2 reusable hand warmers. Click to activate.",
+      "es": "Juego de 2 calentadores de manos reutilizables. Activación por presión."
+    },
+    "price": "19.99",
+    "stock": 52,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Porte-Skis SkiCarrier",
+      "en": "Ski Carrier SkiCarrier",
+      "es": "Portaesquís SkiCarrier"
+    },
+    "description": {
+      "fr": "Sangles pour porter facilement vos skis. Rembourrage épaule.",
+      "en": "Straps to easily carry your skis. Shoulder padding.",
+      "es": "Correas para llevar fácilmente tus esquís. Acolchado de hombro."
+    },
+    "price": "29.99",
+    "stock": 41,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Brosse à Fart BrushWax",
+      "en": "Wax Brush BrushWax",
+      "es": "Cepillo de Cera BrushWax"
+    },
+    "description": {
+      "fr": "Set de 3 brosses pour l'entretien. Nylon, bronze et crin.",
+      "en": "Set of 3 brushes for maintenance. Nylon, bronze and horsehair.",
+      "es": "Juego de 3 cepillos para mantenimiento. Nylon, bronce y crin."
+    },
+    "price": "34.99",
+    "stock": 36,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Racloir à Fart Scraper Pro",
+      "en": "Wax Scraper Scraper Pro",
+      "es": "Raspador de Cera Scraper Pro"
+    },
+    "description": {
+      "fr": "Racloir en plexiglas pour enlever le fart. Bords arrondis.",
+      "en": "Plexiglass scraper to remove wax. Rounded edges.",
+      "es": "Raspador de plexiglás para quitar cera. Bordes redondeados."
+    },
+    "price": "12.99",
+    "stock": 58,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Lime à Carres EdgeSharp",
+      "en": "Edge File EdgeSharp",
+      "es": "Lima de Cantos EdgeSharp"
+    },
+    "description": {
+      "fr": "Lime diamant pour affûter les carres. Angle réglable.",
+      "en": "Diamond file to sharpen edges. Adjustable angle.",
+      "es": "Lima de diamante para afilar cantos. Ángulo ajustable."
+    },
+    "price": "44.99",
+    "stock": 22,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Étau de Fartage WaxVise",
+      "en": "Waxing Vise WaxVise",
+      "es": "Tornillo de Encerado WaxVise"
+    },
+    "description": {
+      "fr": "Étau portable pour l'entretien. Compatible skis et snowboards.",
+      "en": "Portable vise for maintenance. Compatible with skis and snowboards.",
+      "es": "Tornillo portátil para mantenimiento. Compatible con esquís y tablas."
+    },
+    "price": "89.99",
+    "stock": 11,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Semelles de Rechange SpareSole",
+      "en": "Replacement Boot Soles SpareSole",
+      "es": "Suelas de Repuesto SpareSole"
+    },
+    "description": {
+      "fr": "Semelles de remplacement pour chaussures de ski. Norme GripWalk.",
+      "en": "Replacement soles for ski boots. GripWalk standard.",
+      "es": "Suelas de reemplazo para botas de esquí. Estándar GripWalk."
+    },
+    "price": "54.99",
+    "stock": 18,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Adaptateur Fixation BindAdapter",
+      "en": "Binding Adapter BindAdapter",
+      "es": "Adaptador de Fijaciones BindAdapter"
+    },
+    "description": {
+      "fr": "Adaptateur universel pour fixations. Facilite le montage.",
+      "en": "Universal adapter for bindings. Facilitates mounting.",
+      "es": "Adaptador universal para fijaciones. Facilita el montaje."
+    },
+    "price": "39.99",
+    "stock": 23,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Leash de Snowboard SafeLeash",
+      "en": "Snowboard Leash SafeLeash",
+      "es": "Correa de Snowboard SafeLeash"
+    },
+    "description": {
+      "fr": "Leash de sécurité pour snowboard. Évite la planche qui glisse.",
+      "en": "Safety leash for snowboard. Prevents board from sliding away.",
+      "es": "Correa de seguridad para snowboard. Evita que la tabla se deslice."
+    },
+    "price": "9.99",
+    "stock": 77,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Stomp Pad GripPad",
+      "en": "Stomp Pad GripPad",
+      "es": "Stomp Pad GripPad"
+    },
+    "description": {
+      "fr": "Pad antidérapant pour snowboard. Adhésif puissant.",
+      "en": "Anti-slip pad for snowboard. Strong adhesive.",
+      "es": "Pad antideslizante para snowboard. Adhesivo fuerte."
+    },
+    "price": "14.99",
+    "stock": 63,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Couteau Multi-Outils SkiTool",
+      "en": "Multi-Tool Knife SkiTool",
+      "es": "Navaja Multiusos SkiTool"
+    },
+    "description": {
+      "fr": "Outil multifonction pour skis. Tournevis et clé Allen intégrés.",
+      "en": "Multi-function tool for skis. Screwdriver and Allen key included.",
+      "es": "Herramienta multifunción para esquís. Destornillador y llave Allen incluidos."
+    },
+    "price": "24.99",
+    "stock": 47,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Spray Imperméabilisant WaterShield",
+      "en": "Waterproofing Spray WaterShield",
+      "es": "Spray Impermeabilizante WaterShield"
+    },
+    "description": {
+      "fr": "Spray pour réimperméabiliser vêtements. Écologique sans PFC.",
+      "en": "Spray to re-waterproof clothing. Eco-friendly PFC-free.",
+      "es": "Spray para reimpermeabilizar ropa. Ecológico sin PFC."
+    },
+    "price": "19.99",
+    "stock": 39,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Lessive Technique TechWash",
+      "en": "Technical Detergent TechWash",
+      "es": "Detergente Técnico TechWash"
+    },
+    "description": {
+      "fr": "Lessive spéciale vêtements techniques. Préserve l'imperméabilité.",
+      "en": "Special detergent for technical clothing. Preserves waterproofing.",
+      "es": "Detergente especial para ropa técnica. Preserva impermeabilización."
+    },
+    "price": "16.99",
+    "stock": 42,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Antivol Ski SecureLock",
+      "en": "Ski Lock SecureLock",
+      "es": "Candado para Esquís SecureLock"
+    },
+    "description": {
+      "fr": "Câble antivol pour skis et snowboards. Code à 4 chiffres.",
+      "en": "Security cable for skis and snowboards. 4-digit code.",
+      "es": "Cable de seguridad para esquís y tablas. Código de 4 dígitos."
+    },
+    "price": "29.99",
+    "stock": 34,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Casier Vestiaire LockerBag",
+      "en": "Locker Bag LockerBag",
+      "es": "Bolsa de Vestuario LockerBag"
+    },
+    "description": {
+      "fr": "Sac de rangement pour casier station. Organisateur intégré.",
+      "en": "Storage bag for resort locker. Built-in organizer.",
+      "es": "Bolsa de almacenamiento para casillero estación. Organizador integrado."
+    },
+    "price": "34.99",
+    "stock": 29,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Thermos Isotherme ThermoPro",
+      "en": "Insulated Thermos ThermoPro",
+      "es": "Termo Aislante ThermoPro"
+    },
+    "description": {
+      "fr": "Thermos 500ml. Garde chaud 12h. Double paroi inox.",
+      "en": "500ml thermos. Keeps hot 12h. Stainless steel double wall.",
+      "es": "Termo 500ml. Mantiene caliente 12h. Doble pared acero inoxidable."
+    },
+    "price": "39.99",
+    "stock": 48,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Gourde Sport HydroBottle",
+      "en": "Sports Bottle HydroBottle",
+      "es": "Botella Deportiva HydroBottle"
+    },
+    "description": {
+      "fr": "Gourde 750ml. Isolée. Paille intégrée pour boire facilement.",
+      "en": "750ml bottle. Insulated. Built-in straw for easy drinking.",
+      "es": "Botella 750ml. Aislada. Pajita integrada para beber fácilmente."
+    },
+    "price": "29.99",
+    "stock": 51,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Kit Réparation RepairKit",
+      "en": "Repair Kit RepairKit",
+      "es": "Kit de Reparación RepairKit"
+    },
+    "description": {
+      "fr": "Kit complet pour réparation d'urgence. Colle, patches, outils.",
+      "en": "Complete kit for emergency repairs. Glue, patches, tools.",
+      "es": "Kit completo para reparaciones de emergencia. Pegamento, parches, herramientas."
+    },
+    "price": "44.99",
+    "stock": 20,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Semelles Chauffantes HeatedSole",
+      "en": "Heated Insoles HeatedSole",
+      "es": "Plantillas Calefactables HeatedSole"
+    },
+    "description": {
+      "fr": "Semelles chauffantes à batterie. Autonomie 8h. Télécommande.",
+      "en": "Battery-powered heated insoles. 8h battery life. Remote control.",
+      "es": "Plantillas calefactables a batería. Autonomía 8h. Control remoto."
+    },
+    "price": "129.99",
+    "stock": 13,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Masque OTG OverGlasses",
+      "en": "OTG Goggles OverGlasses",
+      "es": "Gafas OTG OverGlasses"
+    },
+    "description": {
+      "fr": "Masque conçu pour passer sur lunettes de vue. Large champ de vision.",
+      "en": "Goggles designed to fit over prescription glasses. Wide field of vision.",
+      "es": "Gafas diseñadas para pasar sobre gafas graduadas. Amplio campo de visión."
+    },
+    "price": "109.99",
+    "stock": 17,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Écran de Rechange LensSpare",
+      "en": "Replacement Lens LensSpare",
+      "es": "Lente de Repuesto LensSpare"
+    },
+    "description": {
+      "fr": "Écran de rechange pour masque. Catégorie 2 temps couvert.",
+      "en": "Replacement lens for goggles. Category 2 for cloudy weather.",
+      "es": "Lente de repuesto para gafas. Categoría 2 para tiempo nublado."
+    },
+    "price": "49.99",
+    "stock": 31,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Protège-Tibias ShinGuard",
+      "en": "Shin Guards ShinGuard",
+      "es": "Protectores de Espinilla ShinGuard"
+    },
+    "description": {
+      "fr": "Protection tibias pour débutants. Mousse EVA. Confortable.",
+      "en": "Shin protection for beginners. EVA foam. Comfortable.",
+      "es": "Protección de espinillas para principiantes. Espuma EVA. Cómodos."
+    },
+    "price": "34.99",
+    "stock": 26,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Chaussons de Chaussures BootLiner",
+      "en": "Boot Liners BootLiner",
+      "es": "Botines Interiores BootLiner"
+    },
+    "description": {
+      "fr": "Chaussons thermoformables de rechange. Mémoire de forme.",
+      "en": "Replacement heat-moldable liners. Memory foam.",
+      "es": "Botines termoformables de repuesto. Espuma con memoria."
+    },
+    "price": "99.99",
+    "stock": 14,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Rehausseur de Fixation RiserPad",
+      "en": "Binding Riser RiserPad",
+      "es": "Elevador de Fijación RiserPad"
+    },
+    "description": {
+      "fr": "Rehausseurs pour snowboard. Améliore le levier et réduit fatigue.",
+      "en": "Risers for snowboard. Improves leverage and reduces fatigue.",
+      "es": "Elevadores para snowboard. Mejora apalancamiento y reduce fatiga."
+    },
+    "price": "29.99",
+    "stock": 22,
+    "category": "accessories",
+    "isActive": true
+  },
+  {
+    "name": {
+      "fr": "Cire Edge Tuner EdgeWax",
+      "en": "Edge Tuner Wax EdgeWax",
+      "es": "Cera para Cantos EdgeWax"
+    },
+    "description": {
+      "fr": "Cire spéciale pour protéger les carres. Anti-rouille.",
+      "en": "Special wax to protect edges. Anti-rust.",
+      "es": "Cera especial para proteger cantos. Antioxidante."
+    },
+    "price": "14.99",
+    "stock": 38,
+    "category": "accessories",
+    "isActive": true
   }
 ]

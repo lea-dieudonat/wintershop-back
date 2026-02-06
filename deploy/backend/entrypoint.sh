@@ -53,6 +53,11 @@ chown -R www-data:www-data /var/www/var
 chmod -R 775 /var/www/var
 
 echo "✅ Backend is ready!"
+
+# Replace PORT placeholder in nginx config with Railway's dynamic PORT
+echo "🔌 Configuring port ${PORT:-8000}..."
+sed -i "s/\${PORT}/${PORT:-8000}/g" /etc/nginx/http.d/default.conf
+
 echo "🎉 Starting services..."
 
 # Start supervisord (manages PHP-FPM and Nginx)

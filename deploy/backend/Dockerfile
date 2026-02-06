@@ -9,6 +9,7 @@ RUN apk --no-cache add \
     git \
     bash \
     mysql-client \
+    sed \
     && apk --no-cache add --virtual .build-deps \
         autoconf \
         build-base \
@@ -74,7 +75,7 @@ COPY deploy/backend/supervisord.conf /etc/supervisord.conf
 COPY deploy/backend/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose port
+# Expose port (Railway will use $PORT env var)
 EXPOSE 8000
 
 # Use entrypoint script

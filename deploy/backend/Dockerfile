@@ -49,6 +49,7 @@ RUN chmod +x bin/console && \
     chmod -R 777 var
 
 # Copy simplified entrypoint
+COPY deploy/backend/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Railway will set PORT dynamically

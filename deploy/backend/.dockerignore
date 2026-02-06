@@ -1,0 +1,69 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+docs/
+*.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+docker/
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Tests
+tests/
+.phpunit.result.cache
+.phpunit.cache/
+
+# Cache and logs (will be regenerated)
+var/cache/*
+var/log/*
+var/sessions/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+!var/sessions/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Node modules (if any)
+node_modules/
+
+# Environment files (secrets handled by Railway)
+.env.local
+.env.*.local
+.env.test
+
+# Backups
+*.backup
+*.bak
+*.sql
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Deployment scripts (not needed in image)
+deploy/
+
+# Other
+*.lock

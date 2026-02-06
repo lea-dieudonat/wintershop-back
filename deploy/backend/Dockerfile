@@ -1,4 +1,4 @@
-# Simplified Production Dockerfile for Symfony on Railway
+# Production Dockerfile for WinterShop Backend (Symfony + API Platform)
 FROM php:8.3-cli-alpine
 
 # Install system dependencies
@@ -34,7 +34,7 @@ WORKDIR /var/www
 # Copy composer files
 COPY composer.json composer.lock symfony.lock ./
 
-# Install dependencies
+# Install dependencies (with dev for fixtures support)
 RUN composer install --optimize-autoloader --no-scripts --no-interaction
 
 # Copy application code
@@ -48,15 +48,15 @@ RUN chmod +x bin/console && \
     mkdir -p var/cache var/log && \
     chmod -R 777 var
 
-# Copy simplified entrypoint
+# Copy production entrypoint
 COPY deploy/backend/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Railway will set PORT dynamically
-ENV PORT=8000
+# Railway uses PORT environment variable
+ENV PORT=8080
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8080
 
 # Use entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
